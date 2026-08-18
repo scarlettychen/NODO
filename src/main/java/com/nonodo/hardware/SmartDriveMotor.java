@@ -1,0 +1,71 @@
+package com.nonodo.hardware;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+/**
+ * Do not use this class for arms or intakes. This feedforward math is specifically designed to overcome foam tile friction.
+ */
+public class SmartDriveMotor {
+
+    private static final double NOMINAL_VOLTAGE = 13.0;
+    private static final double FEEDFORWARD_DEADBAND = 0.01;
+
+    private final DcMotorEx motor;
+    private final BatteryVoltageFilter batteryVoltageFilter;
+    private double kF;
+
+    public SmartDriveMotor(HardwareMap hardwareMap, String motorName, double kF) {
+        this(hardwareMap.get(DcMotorEx.class, motorName), BatteryVoltageFilter.getInstance(hardwareMap), kF);
+    }
+
+    /**
+     * Maps a drive motor if it exists in the hardware map. Returns null instead of crashing
+     * when a rookie config is missing a name.
+     */
+    public static SmartDriveMotor tryCreate(HardwareMap hardwareMap, String motorName, double kF) {
+        if (hardwareMap == null || motorName == null) {
+            return null;
+        }
+        DcMotorEx mappedMotor = hardwareMap.tryGet(DcMotorEx.class, motorName);
+        if (mappedMotor == null) {
+            return null;
+        }
+        return new SmartDriveMotor(mappedMotor, BatteryVoltageFilter.getInstance(hardwareMap), kF);
+    }
+
+    private SmartDriveMotor(DcMotorEx motor, BatteryVoltageFilter batteryVoltageFilter, double kF) {
+        this.motor = motor;
+        this.batteryVoltageFilter = batteryVoltageFilter;
+        this.kF = kF;
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void setKF(double newKF) {
+        kF = newKF;
+    }
+
+    public void reverse() {
+        motor.setDirection(DcMotor.Direction.REVERSE);
+    }
+
+    public void setDrivePower(double targetPower) {
+        batteryVoltageFilter.update();
+        double voltage = batteryVoltageFilter.getVoltage();
+        // A 13V scale keeps joystick/auto power feeling the same as the battery sags.
+        // Floor the divisor so a USB-only hub (near 0V) cannot explode the command.
+        if (voltage < 1.0) {
+            voltage = NOMINAL_VOLTAGE;
+        }
+        double adjustedPower = targetPower * (NOMINAL_VOLTAGE / voltage);
+
+        if (adjustedPower > FEEDFORWARD_DEADBAND) {
+            adjustedPower += kF;
+        } else if (adjustedPower < -FEEDFORWARD_DEADBAND) {
+            adjustedPower -= kF;
+        }
+
+        motor.setPower(adjustedPower);
+    }
+}
