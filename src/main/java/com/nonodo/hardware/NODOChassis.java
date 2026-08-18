@@ -1,5 +1,6 @@
 package com.nonodo.hardware;
 
+import com.nonodo.UsageTracker;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -7,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-public class NoOdoChassis {
+public class NODOChassis {
 
     private static final double HEADING_GAIN = 0.02;
 
@@ -17,18 +18,24 @@ public class NoOdoChassis {
     private final SmartDriveMotor backRight;
     private final IMU imu;
 
-    public NoOdoChassis(HardwareMap hwMap, double kF) {
+    public NODOChassis(HardwareMap hwMap, double kF) {
         this(hwMap, kF,
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
     }
 
-    public NoOdoChassis(
+    public NODOChassis(
             HardwareMap hwMap,
             double kF,
             RevHubOrientationOnRobot.LogoFacingDirection logoDir,
             RevHubOrientationOnRobot.UsbFacingDirection usbDir
     ) {
+        try {
+            UsageTracker.ping(hwMap);
+        } catch (Exception ignored) {
+            // Usage ping must never prevent the drivetrain from initializing.
+        }
+
         // kF is the static feedforward needed to overcome foam tile friction.
         frontLeft = new SmartDriveMotor(hwMap, "frontLeft", kF);
         frontRight = new SmartDriveMotor(hwMap, "frontRight", kF);

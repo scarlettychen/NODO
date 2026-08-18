@@ -1,6 +1,10 @@
 apply plugin: 'com.android.library'
 
+group = 'com.nonodo'
+version = '1.0.0'
+
 android {
+    namespace 'com.nonodo'
     compileSdk 33
 
     defaultConfig {

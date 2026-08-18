@@ -1,11 +1,11 @@
 package com.nonodo.command;
 
-public class SequentialGroup implements NoOdoCommand {
+public class NODOSequentialGroup implements NODOCommand {
 
-    private final NoOdoCommand[] commands;
+    private final NODOCommand[] commands;
     private int index;
 
-    public SequentialGroup(NoOdoCommand... commands) {
+    public NODOSequentialGroup(NODOCommand... commands) {
         this.commands = commands;
     }
 
@@ -23,7 +23,7 @@ public class SequentialGroup implements NoOdoCommand {
             return;
         }
 
-        NoOdoCommand current = commands[index];
+        NODOCommand current = commands[index];
         current.execute();
         if (current.isFinished()) {
             current.end();

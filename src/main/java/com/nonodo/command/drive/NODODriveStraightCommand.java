@@ -1,20 +1,20 @@
 package com.nonodo.command.drive;
 
-import com.nonodo.command.NoOdoCommand;
-import com.nonodo.hardware.NoOdoChassis;
+import com.nonodo.command.NODOCommand;
+import com.nonodo.hardware.NODOChassis;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class DriveStraightCommand implements NoOdoCommand {
+public class NODODriveStraightCommand implements NODOCommand {
 
     private static final double HEADING_GAIN = 0.02;
 
-    private final NoOdoChassis chassis;
+    private final NODOChassis chassis;
     private final double power;
     private final long timeMs;
     private ElapsedTime timer;
     private double targetHeading;
 
-    public DriveStraightCommand(NoOdoChassis chassis, double power, long timeMs) {
+    public NODODriveStraightCommand(NODOChassis chassis, double power, long timeMs) {
         this.chassis = chassis;
         this.power = power;
         this.timeMs = timeMs;

@@ -1,8 +1,9 @@
 package com.nonodo.blocks;
 
-import com.nonodo.command.NoOdoCommand;
-import com.nonodo.command.drive.DriveStraightCommand;
-import com.nonodo.hardware.NoOdoChassis;
+import com.nonodo.UsageTracker;
+import com.nonodo.command.NODOCommand;
+import com.nonodo.command.drive.NODODriveStraightCommand;
+import com.nonodo.hardware.NODOChassis;
 import com.nonodo.hardware.SmartDriveMotor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * This is not a runnable OpMode. Drop {@code initializeDrive} into a Blocks init stack, then
  * call {@code driveStraight} / {@code turnToHeading} from the run stack.
  *
- * <p>Mecanum reuses {@link NoOdoChassis} and {@link DriveStraightCommand}. Tank uses the same
+ * <p>Mecanum reuses {@link NODOChassis} and {@link NODODriveStraightCommand}. Tank uses the same
  * {@link SmartDriveMotor} voltage compensation and gyro math on {@code leftDrive}/{@code rightDrive}.
  */
 @ExportClassToBlocks
@@ -40,7 +41,7 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
     private static int driveType = DRIVE_TYPE_MECANUM;
     private static boolean driveInitialized;
 
-    private static NoOdoChassis chassis;
+    private static NODOChassis chassis;
     private static SmartDriveMotor frontLeft;
     private static SmartDriveMotor frontRight;
     private static SmartDriveMotor backLeft;
@@ -66,6 +67,11 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
         leftDrive = rightDrive = null;
         imu = null;
         driveInitialized = false;
+        try {
+            UsageTracker.ping(hardwareMap);
+        } catch (Exception ignored) {
+            // Usage ping must never prevent drive init.
+        }
 
         if (hardwareMap == null) {
             addLine("initializeDrive: hardwareMap is null. Call this from a Blocks OpMode.");
@@ -107,9 +113,9 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
         }
         power = clamp(power, -1.0, 1.0);
 
-        // Mecanum path reuses DriveStraightCommand: heading P-loop + SmartDriveMotor voltage scale.
+        // Mecanum path reuses NODODriveStraightCommand: heading P-loop + SmartDriveMotor voltage scale.
         if (driveType == DRIVE_TYPE_MECANUM && chassis != null) {
-            runBlocking(new DriveStraightCommand(chassis, power, Math.round(durationSeconds * 1000.0)));
+            runBlocking(new NODODriveStraightCommand(chassis, power, Math.round(durationSeconds * 1000.0)));
             return;
         }
 
@@ -191,12 +197,12 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
 
     private static void initializeMecanum() {
         try {
-            chassis = new NoOdoChassis(hardwareMap, DEFAULT_KF);
+            chassis = new NODOChassis(hardwareMap, DEFAULT_KF);
             frontLeft = chassis.getFrontLeft();
             frontRight = chassis.getFrontRight();
             backLeft = chassis.getBackLeft();
             backRight = chassis.getBackRight();
-            addLine("Mapped mecanum via NoOdoChassis.");
+            addLine("Mapped mecanum via NODOChassis.");
         } catch (RuntimeException ignored) {
             chassis = null;
             frontLeft = mapMotor("frontLeft", "front_left");
@@ -251,9 +257,9 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
     }
 
     /**
-     * Runs a NoOdoCommand to completion while still honoring the driver's STOP button.
+     * Runs a NODOCommand to completion while still honoring the driver's STOP button.
      */
-    private static void runBlocking(NoOdoCommand command) {
+    private static void runBlocking(NODOCommand command) {
         command.init();
         while (isOpModeActive() && !command.isFinished()) {
             command.execute();

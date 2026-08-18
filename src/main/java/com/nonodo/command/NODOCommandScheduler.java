@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class CommandScheduler {
+public class NODOCommandScheduler {
 
-    private final List<NoOdoCommand> activeCommands = new ArrayList<>();
+    private final List<NODOCommand> activeCommands = new ArrayList<>();
 
-    public void add(NoOdoCommand cmd) {
+    public void add(NODOCommand cmd) {
         cmd.init();
         activeCommands.add(cmd);
     }
 
     public void run() {
-        Iterator<NoOdoCommand> iterator = activeCommands.iterator();
+        Iterator<NODOCommand> iterator = activeCommands.iterator();
         while (iterator.hasNext()) {
-            NoOdoCommand cmd = iterator.next();
+            NODOCommand cmd = iterator.next();
             cmd.execute();
             if (cmd.isFinished()) {
                 cmd.end();

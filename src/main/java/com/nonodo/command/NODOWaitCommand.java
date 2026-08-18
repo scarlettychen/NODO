@@ -2,12 +2,12 @@ package com.nonodo.command;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class WaitCommand implements NoOdoCommand {
+public class NODOWaitCommand implements NODOCommand {
 
     private final long timeMs;
     private ElapsedTime timer;
 
-    public WaitCommand(long timeMs) {
+    public NODOWaitCommand(long timeMs) {
         this.timeMs = timeMs;
     }
 

@@ -1,6 +1,6 @@
 package com.nonodo.command;
 
-public interface NoOdoCommand {
+public interface NODOCommand {
     void init();
     void execute();
     boolean isFinished();

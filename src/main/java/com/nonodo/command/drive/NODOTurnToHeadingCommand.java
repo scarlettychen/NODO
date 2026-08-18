@@ -1,26 +1,25 @@
 package com.nonodo.command.drive;
 
-import com.nonodo.command.NoOdoCommand;
-import com.nonodo.hardware.NoOdoChassis;
+import com.nonodo.command.NODOCommand;
+import com.nonodo.hardware.NODOChassis;
 
-public class TurnToHeadingCommand implements NoOdoCommand {
+public class NODOTurnToHeadingCommand implements NODOCommand {
 
     private static final double TURN_GAIN = 0.02;
     private static final double MAX_POWER = 0.8;
     private static final double HEADING_TOLERANCE_DEG = 2.0;
 
-    private final NoOdoChassis chassis;
+    private final NODOChassis chassis;
     private final double targetYawDegrees;
     private double error;
 
-    public TurnToHeadingCommand(NoOdoChassis chassis, double targetYawDegrees) {
+    public NODOTurnToHeadingCommand(NODOChassis chassis, double targetYawDegrees) {
         this.chassis = chassis;
         this.targetYawDegrees = targetYawDegrees;
     }
 
     @Override
     public void init() {
-        // Do not reset the IMU; this command turns to an absolute field heading.
         error = headingError();
     }
 

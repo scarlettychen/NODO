@@ -1,23 +1,23 @@
 package com.nonodo.command;
 
-public class ParallelGroup implements NoOdoCommand {
+public class NODOParallelGroup implements NODOCommand {
 
-    private final NoOdoCommand[] commands;
+    private final NODOCommand[] commands;
 
-    public ParallelGroup(NoOdoCommand... commands) {
+    public NODOParallelGroup(NODOCommand... commands) {
         this.commands = commands;
     }
 
     @Override
     public void init() {
-        for (NoOdoCommand command : commands) {
+        for (NODOCommand command : commands) {
             command.init();
         }
     }
 
     @Override
     public void execute() {
-        for (NoOdoCommand command : commands) {
+        for (NODOCommand command : commands) {
             if (!command.isFinished()) {
                 command.execute();
             }
@@ -26,7 +26,7 @@ public class ParallelGroup implements NoOdoCommand {
 
     @Override
     public boolean isFinished() {
-        for (NoOdoCommand command : commands) {
+        for (NODOCommand command : commands) {
             if (!command.isFinished()) {
                 return false;
             }
@@ -36,7 +36,7 @@ public class ParallelGroup implements NoOdoCommand {
 
     @Override
     public void end() {
-        for (NoOdoCommand command : commands) {
+        for (NODOCommand command : commands) {
             command.end();
         }
     }
