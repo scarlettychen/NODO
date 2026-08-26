@@ -1,3 +1,7 @@
-{% comment %}
-  Language panels: see assets/js/language-toggle.js and _sass/custom/custom.scss
-{% endcomment %}
+<style>
+  .language-toggle > [data-language]:not(:first-of-type) { display: none; }
+  html.nodo-lang-ready .language-toggle > [data-language] { display: none !important; }
+  html.nodo-lang-ready .language-toggle > [data-language].is-lang-active { display: block !important; }
+  html.nodo-lang-ready .language-toggle > [data-language][hidden] { display: none !important; }
+</style>
+<script src="{{ '/assets/js/language-toggle.js' | relative_url }}" defer></script>

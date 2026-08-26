@@ -140,4 +140,4 @@ If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! O
 </div>
 
 
-## Visit [Tuning](tuning.html) on how to tune.
+## Visit [Tuning]({% link tuning.md %}) on how to tune.

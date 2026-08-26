@@ -22,23 +22,23 @@ Choose your programming environment for instructions.
 
 ### How to Apply kF
 
-<details>
-<summary><strong>Java/OnBotJava</strong></summary>
+<div class="language-toggle" data-language-group="tuning-kf" markdown="1">
+
+<div data-language="Java/OnBot Java" markdown="1">
 
 In Java, your `kF` value is the **third argument** passed into your drive constructor. You only need to set this once in your `init()` or `runOpMode()` method.
 
 However, on the sample tele which you will use for test, we have put kF at the top for easy access.
 
-FInd this:
+Find this:
 
 ```java
 private static double kF = 0.03;
 ```
 
-</details>
+</div>
 
-<details>
-<summary><strong>Blocks</strong></summary>
+<div data-language="Blocks" markdown="1">
 
 You can use the dedicated setter to set kF.
 
@@ -47,7 +47,9 @@ You can use the dedicated setter to set kF.
 3. Snap a math number block to it and set it to `0.03`.
 4. Place this directly below your `initializeMecanumDrive` block.
 
-</details>
+</div>
+
+</div>
 
 ---
 
@@ -74,10 +76,11 @@ You can use the dedicated setter to set kF.
 
 ### How to Apply Turn PD
 
-<details>
-<summary><strong>Java</strong></summary>
+<div class="language-toggle" data-language-group="tuning-pd" markdown="1">
 
-**This is already included in the Quickstart Auton** 
+<div data-language="Java/OnBot Java" markdown="1">
+
+**This is already included in the Quickstart Auton**
 
 Use `setTurnPD()` on your drive object before starting your autonomous sequence.
 
@@ -90,10 +93,9 @@ drive.setTurnPD(0.04, 0.0025, 0.4);
 drive.setTurnToleranceDegrees(3.0);
 ```
 
-</details>
+</div>
 
-<details>
-<summary><strong>FTC Blocks</strong></summary>
+<div data-language="Blocks" markdown="1">
 
 Use the dedicated Turn PD block to override the default values.
 
@@ -103,7 +105,9 @@ Use the dedicated Turn PD block to override the default values.
 4. Set them to `0.04`, `0.0025`, and `0.4`, respectively.
 5. Place this in your initialization sequence, before running any `turnToHeading` blocks.
 
-</details>
+</div>
+
+</div>
 
 ---
 
@@ -120,6 +124,6 @@ If your tuning doesn't seem to be working, check these common issues:
 
 Once your robot is tuned, you are ready to write complex autonomous paths.
 
-* [**Building Autons →**](building.html)
+* [**Building Autons →**]({% link building.md %})
 
 

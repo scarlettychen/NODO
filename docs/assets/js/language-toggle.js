@@ -33,6 +33,20 @@
     }
   }
 
+  function getDirectPanels(group) {
+    var panels = [];
+    var child = group.firstElementChild;
+
+    while (child) {
+      if (child.hasAttribute('data-language')) {
+        panels.push(child);
+      }
+      child = child.nextElementSibling;
+    }
+
+    return panels;
+  }
+
   function findPanelForCategory(panels, category) {
     for (var i = 0; i < panels.length; i++) {
       if (categorize(panels[i].getAttribute('data-language')) === category) {
@@ -42,8 +56,26 @@
     return panels[0] || null;
   }
 
+  function setPanelVisible(panel, visible) {
+    if (!panel) {
+      return;
+    }
+
+    panel.classList.toggle('is-lang-active', visible);
+
+    if (visible) {
+      panel.removeAttribute('hidden');
+    } else {
+      panel.setAttribute('hidden', 'hidden');
+    }
+
+    panel.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  }
+
   function applyCategoryToGroup(group, category) {
-    var panels = group.__nodoPanels;
+    var panels = group._nodoPanels;
+    var nav = group._nodoNav;
+
     if (!panels || !panels.length) {
       return;
     }
@@ -58,13 +90,14 @@
     group.setAttribute('data-active-lang', activeLabel);
 
     for (var i = 0; i < panels.length; i++) {
-      var panel = panels[i];
-      var isActive = panel === activePanel;
-      panel.classList.toggle('is-lang-active', isActive);
-      panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+      setPanelVisible(panels[i], panels[i] === activePanel);
     }
 
-    var buttons = group.querySelectorAll('.nodo-lang-toggle__btn[data-lang-category]');
+    if (!nav) {
+      return;
+    }
+
+    var buttons = nav.querySelectorAll('.nodo-lang-toggle__btn[data-lang-category]');
     for (var j = 0; j < buttons.length; j++) {
       var btn = buttons[j];
       var btnActive = btn.getAttribute('data-lang-category') === category;
@@ -74,7 +107,7 @@
   }
 
   function applyCategory(category) {
-    var groups = document.querySelectorAll('.language-toggle');
+    var groups = document.querySelectorAll('.language-toggle[data-nodo-init]');
     for (var i = 0; i < groups.length; i++) {
       applyCategoryToGroup(groups[i], category);
     }
@@ -101,20 +134,21 @@
       nav.appendChild(btn);
     }
 
-    group.insertBefore(nav, panels[0]);
+    group.parentNode.insertBefore(nav, group);
+    group._nodoNav = nav;
+    nav._nodoGroup = group;
   }
 
   function initGroup(group) {
-    var panels = Array.prototype.slice.call(
-      group.querySelectorAll(':scope > [data-language]')
-    );
-
+    var panels = getDirectPanels(group);
     if (!panels.length) {
-      return;
+      return false;
     }
 
-    group.__nodoPanels = panels;
+    group._nodoPanels = panels;
     buildToggleNav(group, panels);
+    group.setAttribute('data-nodo-init', 'true');
+    return true;
   }
 
   function onClick(event) {
@@ -136,8 +170,16 @@
 
   function init() {
     var groups = document.querySelectorAll('.language-toggle');
+    var initialized = 0;
+
     for (var i = 0; i < groups.length; i++) {
-      initGroup(groups[i]);
+      if (initGroup(groups[i])) {
+        initialized += 1;
+      }
+    }
+
+    if (!initialized) {
+      return;
     }
 
     applyCategory(readCategory());

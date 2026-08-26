@@ -91,15 +91,23 @@ This is the recommended approach for teams who are new to NODO.
 
 The most basic NODO command is `driveFor()`.
 
-### Java
+<div class="language-toggle" data-language-group="building-drive" markdown="1">
+
+<div data-language="Java/OnBot Java" markdown="1">
 
 ```java
 drive.driveFor(0.5, 800, this::opModeIsActive);
 ```
 
-### FTC Blocks
+</div>
+
+<div data-language="Blocks" markdown="1">
 
 ftc blocks image needed
+
+</div>
+
+</div>
 
 The command has two important values:
 
@@ -138,7 +146,9 @@ You should therefore tune your movement times on the actual field.
 
 Strafing is available on mecanum drivetrains.
 
-### Java
+<div class="language-toggle" data-language-group="building-strafe" markdown="1">
+
+<div data-language="Java/OnBot Java" markdown="1">
 
 ```java
 drive.strafeFor(0.5, 700, this::opModeIsActive);
@@ -152,9 +162,15 @@ Negative power:
 
 > Strafe left
 
-### FTC Blocks
+</div>
 
-need blocks image 
+<div data-language="Blocks" markdown="1">
+
+need blocks image
+
+</div>
+
+</div>
 
 Strafing is **mecanum-only**.
 
@@ -188,15 +204,23 @@ NODO handles this automatically.
 
 Use `turnBy()` when you want the robot to rotate by a specific amount.
 
-### Java
+<div class="language-toggle" data-language-group="building-turn" markdown="1">
+
+<div data-language="Java/OnBot Java" markdown="1">
 
 ```java
 drive.turnBy(90, this::opModeIsActive);
 ```
 
-### FTC Blocks
+</div>
 
-need blocks image 
+<div data-language="Blocks" markdown="1">
+
+need blocks image
+
+</div>
+
+</div>
 
 This means:
 
@@ -230,15 +254,25 @@ This makes it easy to build sequences without needing to track the robot's absol
 
 Use `waitFor()` when you want the robot to stop before continuing.
 
+<div class="language-toggle" data-language-group="building-wait" markdown="1">
+
+<div data-language="Java/OnBot Java" markdown="1">
+
 ```java
 drive.waitFor(250, this::opModeIsActive);
 ```
 
-This waits for 250 milliseconds with the drivetrain stopped.
+</div>
 
-### FTC Blocks
+<div data-language="Blocks" markdown="1">
 
 need blocks image
+
+</div>
+
+</div>
+
+This waits for 250 milliseconds with the drivetrain stopped.
 
 Waiting can be useful when:
 
@@ -535,5 +569,5 @@ NODO's voltage compensation and IMU control reduce some sources of variation, bu
 > **NODO makes time-based autonomous more consistent. It does not eliminate the fundamental limitations of time-based movement.**
 
 ---
-**[API Reference →](api.html)**
+**[API Reference →]({% link api.md %})**
 Explore every NODO function in detail.

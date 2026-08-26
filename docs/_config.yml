@@ -2,7 +2,9 @@ title: NODO Library
 description: Documentation for the NODO FTC autonomous library
 author: Scarlett
 
-# Live site: https://scarlettychen.github.io/NODO/
+url: "https://scarlettychen.github.io"
+baseurl: "/NODO"
+
 permalink: pretty
 
 remote_theme: just-the-docs/just-the-docs

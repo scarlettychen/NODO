@@ -81,7 +81,7 @@ add pics
 
 </div>
 
-<a href="quickstart.html">
+<a href="{% link quickstart.md %}">
   <button>Click me</button>
 </a>
 

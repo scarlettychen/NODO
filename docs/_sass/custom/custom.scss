@@ -1,45 +1,14 @@
 // Custom SCSS overrides for Just the Docs
-// This file is loaded automatically when the site builds with the Just the Docs theme.
-
-// ---------------------------------------------------------------------------
-// Color variables
-// Replace the placeholder hex values with your team's brand colors.
-// ---------------------------------------------------------------------------
-
-// Primary color (buttons, accents, nav highlights)
-// $btn-primary-color: #000000; // TODO: set primary hex
-
-// Secondary color (supporting UI accents)
-// $body-heading-color: #000000; // TODO: set secondary hex (or use a dedicated secondary var)
-
-// Link color
-// $link-color: #000000; // TODO: set link hex
-
-// Example once filled in:
-// $btn-primary-color: #3d9a6a;
-// $body-heading-color: #1a222c;
-// $link-color: #2f7a56;
-
-// ---------------------------------------------------------------------------
-// Example custom class
-// Use in Markdown/HTML: <div class="team-highlight">...</div>
-// ---------------------------------------------------------------------------
 
 .team-highlight {
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-left: 4px solid #3d9a6a; // swap for your primary when set
+  border-left: 4px solid #3d9a6a;
   background-color: rgba(61, 154, 106, 0.08);
   border-radius: 0 4px 4px 0;
 }
 
-// ---------------------------------------------------------------------------
-// Per-section Java / Blocks language toggle
-// JS injects .nodo-lang-toggle above each .language-toggle group's panels.
-// Button labels come from each panel's data-language attribute.
-// Preference: localStorage key nodo-docs-lang (java | blocks).
-// ---------------------------------------------------------------------------
-
+// Per-section language toggle (nav is injected immediately above .language-toggle)
 $nodo-toggle-border: #c5cdd8;
 $nodo-toggle-bg: #f4f6f8;
 $nodo-toggle-active-bg: #1f2a37;
@@ -50,26 +19,25 @@ $nodo-toggle-fg: #1f2a37;
   display: inline-flex;
   align-items: center;
   gap: 0;
-  margin: 0 0 0.75rem;
-  padding: 0.12rem;
+  margin: 0.5rem 0 0.65rem;
+  padding: 0.1rem;
   border: 1px solid $nodo-toggle-border;
   border-radius: 999px;
   background: $nodo-toggle-bg;
-  vertical-align: middle;
 }
 
 .nodo-lang-toggle__btn {
   appearance: none;
   border: 0;
   margin: 0;
-  padding: 0.2rem 0.55rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 999px;
   background: transparent;
   color: $nodo-toggle-fg;
   font: inherit;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.1;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -89,30 +57,12 @@ $nodo-toggle-fg: #1f2a37;
   color: $nodo-toggle-active-fg;
 }
 
-.nodo-lang-toggle__btn.is-active:hover,
-.nodo-lang-toggle__btn[aria-pressed="true"]:hover {
-  background: $nodo-toggle-active-bg;
-}
-
 .language-toggle {
-  margin: 1rem 0 1.5rem;
+  margin: 0 0 1.25rem;
 }
 
-.language-toggle > [data-language] {
+.language-toggle > [data-language][hidden] {
   display: none !important;
-}
-
-// No-JS / pre-init: show the first language panel only.
-.language-toggle > [data-language]:first-of-type {
-  display: block !important;
-}
-
-html.nodo-lang-ready .language-toggle > [data-language]:first-of-type {
-  display: none !important;
-}
-
-html.nodo-lang-ready .language-toggle > [data-language].is-lang-active {
-  display: block !important;
 }
 
 .language-toggle > [data-language].is-lang-active > :first-child {
@@ -121,7 +71,7 @@ html.nodo-lang-ready .language-toggle > [data-language].is-lang-active {
 
 @media (max-width: 799px) {
   .nodo-lang-toggle__btn {
-    padding: 0.18rem 0.45rem;
-    font-size: 0.68rem;
+    padding: 0.14rem 0.38rem;
+    font-size: 0.64rem;
   }
 }
