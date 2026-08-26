@@ -11,28 +11,27 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
- * Minimal auto: drive straight, then turn 90° (robot-relative).
- *
- * <p><b>Choose drive type</b> with {@link #DRIVE_TYPE} below (MECANUM or TANK).
- *
- * <p>This is a {@link LinearOpMode}: everything runs in {@link #runOpMode()}.
- * You do <b>not</b> need {@code start()} / {@code loop()} unless you use
- * {@code NODORoutine} in an iterative {@code OpMode}.
+ * Testing auton. Drives straight, then turns 90 degrees
  */
-@Autonomous(name = "Sample Drive + Turn 90", group = "NODO Samples")
+@Autonomous(name = "Sample Drive + Turn 90")
 public class SampleDriveAndTurn90 extends LinearOpMode {
 
-    // ===== pick one =====
+    // ===== pick one of these =====
     private static final NODODriveType DRIVE_TYPE = NODODriveType.MECANUM;
     // private static final NODODriveType DRIVE_TYPE = NODODriveType.TANK;
 
     @Override
     public void runOpMode() {
-        if (DRIVE_TYPE == NODODriveType.TANK) {
-            NODOTankDrive.setMotorNames("leftDrive", "rightDrive");
-        } else {
-            NODOChassis.setMotorNames("frontLeft", "frontRight", "backLeft", "backRight");
-        }
+        // ==== pick one =====
+        setMecanum("FL", "FR", "BL", "BR", 
+            DcMotor.Direction.FORWARD, 
+            DcMotor.Direction.REVERSE, 
+            DcMotor.Direction.FORWARD, 
+            DcMotor.Direction.REVERSE);
+
+        // setTank("leftDrive", "rightDrive", 
+        //     DcMotor.Direction.FORWARD, 
+        //     DcMotor.Direction.REVERSE);
 
         NODODrive drive = new NODODrive(hardwareMap, DRIVE_TYPE, 0.03);
 
@@ -40,26 +39,10 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
                 LogoFacingDirection.UP, UsbFacingDirection.FORWARD
         );
 
-        // Optional: tune turn feel (defaults are 0.035 / 0.002 / max 0.35)
-        // drive.setTurnPD(0.04, 0.0025);
-        // drive.setTurnPD(0.04, 0.0025, 0.4); // kP, kD, maxPower
-
-        if (drive.isMecanum()) {
-            drive.setMecanumMotorDirections(
-                    DcMotor.Direction.FORWARD,
-                    DcMotor.Direction.REVERSE,
-                    DcMotor.Direction.FORWARD,
-                    DcMotor.Direction.REVERSE
-            );
-        } else {
-            drive.setTankMotorDirections(
-                    DcMotor.Direction.FORWARD,
-                    DcMotor.Direction.REVERSE
-            );
-        }
+        drive.setTurnPD(0.04, 0.0025);
 
         telemetry.addData("drive", DRIVE_TYPE);
-        telemetry.addLine("Drive + Turn 90 ready. Press PLAY.");
+        telemetry.addLine("Ready.");
         telemetry.update();
         waitForStart();
         if (isStopRequested()) {
@@ -74,4 +57,18 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
         telemetry.addLine("done");
         telemetry.update();
     }
+
+   public void setMecanum(String fl, String fr, String bl, String br,
+                            DcMotor.Direction flDir, DcMotor.Direction frDir, DcMotor.Direction blDir, DcMotor.Direction brDir
+    ) {
+        NODOChassis.setMotorNames(fl, fr, bl, br);
+        NODOChassis.setMotorDirections(flDir, frDir, blDir, brDir);
+    }
+
+    public void setTank(String l, String r, DcMotor.Direction lDir, DcMotor.Direction rDir
+    ) {
+        NODOTankDrive.setMotorNames(l, r);
+        NODOTankDrive.setMotorDirections(lDir, rDir);
+    }
+    
 }

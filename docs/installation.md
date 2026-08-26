@@ -35,19 +35,22 @@ allprojects {
 ## 2. Edit build.gradle
 In your Android Studio project, navigate to 'build.gradle' (Module :TeamCode) in Grade Scripts.
 
-Scroll down to the 'dependencies' block, and add this: 'implementation 'com.nonodo:non-odo:1.0.0''
+Scroll down to the 'dependencies' block, and add:
 
-You should now have something that looks like this: 
+```gradle
+implementation 'com.github.scarlettychen:NODO:1.0.0'
+```
 
-```java
+You should now have something that looks like this:
+
+```gradle
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.ftclib.ftclib:core:2.1.1'
-    
-    // NODO implementation!
-    implementation 'com.nonodo:non-odo:1.0.0'
-}
 
+    // NODO
+    implementation 'com.github.scarlettychen:NODO:1.0.0'
+}
 ```
 
 ## 2. Sync Gradle

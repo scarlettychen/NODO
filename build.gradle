@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 group = 'com.nodo'
@@ -20,7 +21,9 @@ android {
     }
 
     publishing {
-        singleVariant('release')
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 }
 
@@ -28,4 +31,27 @@ dependencies {
     // Provided by the team's FtcRobotController / TeamCode app — not bundled in the AAR.
     compileOnly 'org.firstinspires.ftc:RobotCore:9.0.1'
     compileOnly 'org.firstinspires.ftc:Hardware:9.0.1'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = project.group
+                artifactId = rootProject.name
+                version = project.version
+            }
+        }
+    }
+}
+
+// OnBot Java / Blocks: upload build/outputs/jar/nodo-1.0.0.jar
+tasks.register('exportReleaseJar', Copy) {
+    dependsOn 'assembleRelease'
+    from(zipTree(layout.buildDirectory.file("outputs/aar/${rootProject.name}-release.aar").get().asFile)) {
+        include 'classes.jar'
+    }
+    into layout.buildDirectory.dir('outputs/jar')
+    rename('classes.jar', "${rootProject.name}-${version}.jar")
 }

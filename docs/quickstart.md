@@ -69,7 +69,7 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
         telemetry.update();
     }
 
-   public void setMecanum(String fl, String fr, String bl, String br
+   public void setMecanum(String fl, String fr, String bl, String br,
                             DcMotor.Direction flDir, DcMotor.Direction frDir, DcMotor.Direction blDir, DcMotor.Direction brDir
     ) {
         NODOChassis.setMotorNames(fl, fr, bl, br);
@@ -78,8 +78,8 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
 
     public void setTank(String l, String r, DcMotor.Direction lDir, DcMotor.Direction rDir
     ) {
-        NODOChassis.setMotorNames(l, r);
-        NODOChassis.setMotorDirections(lDir, rDir);
+        NODOTankDrive.setMotorNames(l, r);
+        NODOTankDrive.setMotorDirections(lDir, rDir);
     }
     
 }

@@ -25,7 +25,7 @@ repositories {
 dependencies {
     implementation project(':FtcRobotController')
 
-    implementation 'com.nodo:nodo:1.0.0'
+    implementation 'com.github.scarlettychen:NODO:1.0.0'
 }
 ```
 
@@ -33,7 +33,7 @@ Then sync. Classes under `com.nonodo` resolve against the FTC SDK already on you
 
 ### What `implementation` does
 
-`implementation 'com.nodo:nodo:1.0.0'` is Maven coordinates: **group** `com.nodo`, **artifact** `nodo`, **version** `1.0.0`.
+`implementation 'com.github.scarlettychen:NODO:1.0.0'` is JitPack coordinates for this repo: **GitHub user** `scarlettychen`, **repo** `NODO`, **tag** `1.0.0`.
 
 When you sync / build, Gradle:
 
@@ -43,7 +43,7 @@ When you sync / build, Gradle:
 
 NODO itself uses `compileOnly` for FTC `RobotCore` / `Hardware`, so those are **not** inside the AAR — your existing FTC project already provides them. You only pull in NODO’s code.
 
-Until you publish `com.nodo:nodo` to a repo teams can reach, the dependency will not resolve. After publish (Maven Central / JitPack / GitHub Packages), sync works with no fork.
+Until you publish a GitHub release tag and JitPack builds it, the dependency will not resolve. See **Releasing** below.
 
 ### Chassis only (no commands)
 
