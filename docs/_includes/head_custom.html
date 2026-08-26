@@ -1,15 +1,3 @@
-<script>
-(function () {
-  var KEY = 'nodo-docs-lang';
-  var lang = 'java';
-  try {
-    var stored = window.localStorage.getItem(KEY);
-    if (stored === 'java' || stored === 'blocks') {
-      lang = stored;
-    }
-  } catch (e) {
-    /* private mode / blocked storage */
-  }
-  document.documentElement.setAttribute('data-docs-lang', lang);
-})();
-</script>
+{% comment %}
+  Language panels: see assets/js/language-toggle.js and _sass/custom/custom.scss
+{% endcomment %}

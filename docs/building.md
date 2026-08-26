@@ -535,5 +535,5 @@ NODO's voltage compensation and IMU control reduce some sources of variation, bu
 > **NODO makes time-based autonomous more consistent. It does not eliminate the fundamental limitations of time-based movement.**
 
 ---
-**[API Reference →](api.md)**
+**[API Reference →](api.html)**
 Explore every NODO function in detail.

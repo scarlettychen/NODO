@@ -11,7 +11,7 @@ has_children: false
 NODO uses hardware already on your robot (drivetrain motors, battery voltage, and Control Hub IMU) to make simple, repeatable autonomous routines without additional hardware
 
 ## Dive straight into installation?
-<a href="installation.md">
+<a href="installation.html">
   <button>Install!</button>
 </a>
 
@@ -62,25 +62,25 @@ It does not:
 **NODO is designed around short, repeatable movements, and IMU based heading control.**
 
 ## Recommended Learning Path
-1. [Install NODO](intallation.md) 
+1. [Install NODO](installation.html) 
 
     Add NODO to your FTC project.
-2. [Quickstart](quickstart.md)
+2. [Quickstart](quickstart.html)
 
     Get your robot moving!
-3. [Configure your chassis](chassis.md)
+3. [Configure your chassis](quickstart.html)
 
     Set up motors, directions, and IMU orientation.
-4. [Build your Autonomous](blocks.md)
+4. [Build your Autonomous](building.html)
 
-   Learn movement commands and built complete sequences.
-5. [Tune](tuning.md)
+   Learn movement commands and build complete sequences.
+5. [Tune](tuning.html)
 
    Tune feedforward and turn controls for your robot
 
 
 ### Do you already know NODO?
-[Brows API Reference ->](reference.md)
+[Browse API Reference →](api.html)
 
 
 

@@ -1,8 +1,4 @@
 {% comment %}
-  Site-wide Java / FTC Blocks switcher (Just the Docs header).
-  Preference is stored in localStorage key nodo-docs-lang and applied on every page.
+  Per-section Java / Blocks toggles are injected by assets/js/language-toggle.js
+  at the top of each .language-toggle group on the page.
 {% endcomment %}
-<nav class="nodo-lang-toggle nodo-lang-toggle--global" role="group" aria-label="Documentation language">
-  <button type="button" class="nodo-lang-toggle__btn" data-language="java" aria-pressed="true">Java</button>
-  <button type="button" class="nodo-lang-toggle__btn" data-language="blocks" aria-pressed="false">FTC Blocks</button>
-</nav>

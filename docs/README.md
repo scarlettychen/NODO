@@ -50,7 +50,8 @@ Open http://127.0.0.1:4000/NODO/ (use `--baseurl ""` if testing without project 
 
 ## Java / FTC Blocks toggle
 
-- Header: `_includes/header_custom.html`
+- Injected per section at the top of each `.language-toggle` group
+- Button labels: each panel's `data-language` attribute
 - Preference: `localStorage` key `nodo-docs-lang` (`java` | `blocks`), default **java**
 - Script: `assets/js/language-toggle.js`
 - Styles: `_sass/custom/custom.scss`

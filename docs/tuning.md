@@ -120,6 +120,6 @@ If your tuning doesn't seem to be working, check these common issues:
 
 Once your robot is tuned, you are ready to write complex autonomous paths.
 
-* [**Building Autons →**](https://www.google.com/search?q=autons.md)
+* [**Building Autons →**](building.html)
 
 

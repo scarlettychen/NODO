@@ -9,7 +9,7 @@ nav_order: 6
 A quick reference for NODO's drivetrain functions.
 
 For a complete explanation of how to build an autonomous, see
-[Building Your First Autonomous](building.md).
+[Building Your First Autonomous](building.html).
 
 ---
 
@@ -820,11 +820,8 @@ This page is intended as a **quick reference**.
 
 For step-by-step instructions:
 
-* [Build Your First Autonomous →](building.md)
-* [Chassis Configuration →](chassis.md)
-* [Tuning →](tuning.md)
-* [FTC Blocks →](blocks.md)
-* [Routines →](routines.md)
-
-```
-```
+* [Build Your First Autonomous →](building.html)
+* [Chassis setup →](quickstart.html)
+* [Tuning →](tuning.html)
+* [FTC Blocks →](installation.html)
+* [Routines →](building.html#11-do-i-need-nodoroutine)

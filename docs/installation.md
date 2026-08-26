@@ -9,7 +9,7 @@ nav_order: 2
 
 <div class="language-toggle" data-language-group="some-unique-id" markdown="1">
 
-<div data-language="java" markdown="1">
+<div data-language="Java/OnBot Java" markdown="1">
 
 ## Android Studio Installation Guide
 
@@ -27,7 +27,7 @@ allprojects {
         google() 
         
         // Add this!
-        maven { url '[https://jitpack.io](https://jitpack.io)' }
+        maven { url 'https://jitpack.io' }
     }
 }
 ```
@@ -81,7 +81,7 @@ add pics
 
 </div>
 
-<a href="quickstart.md">
+<a href="quickstart.html">
   <button>Click me</button>
 </a>
 

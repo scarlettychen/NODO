@@ -10,7 +10,7 @@ NODO is a lightweight FTC autonomous framework for teams without odometry pods. 
 2. Add NODO in `TeamCode/build.gradle` (see below).
 3. Sync Gradle, then write OpModes in `TeamCode` that use `NODOChassis` (required) and optionally `NODORoutine` / commands.
 4. Optionally copy examples from this repo’s [`samples/`](samples/) folder into your `org.firstinspires.ftc.teamcode` package and edit hardware names.
-5. For Blocks / OnBot, see the [docs](https://yourusername.github.io/project-name/).
+5. For Blocks / OnBot, see the [docs](https://scarlettychen.github.io/NODO/).
 
 ### Gradle
 
@@ -82,7 +82,7 @@ routine = new NODORoutine(chassis)
 
 ## Docs
 
-Full auton walkthrough (setup, Java, Blocks, tuning, debugging): see [`docs/building-autons.md`](docs/building-autons.md) (published with the rest of the [documentation](https://yourusername.github.io/project-name/)).
+Full auton walkthrough: see [`docs/building.md`](docs/building.md) (published at [https://scarlettychen.github.io/NODO/](https://scarlettychen.github.io/NODO/)).
 
 ## Privacy
 
