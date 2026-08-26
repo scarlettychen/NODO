@@ -61,8 +61,25 @@ $nodo-toggle-fg: #1f2a37;
   margin: 0 0 1.25rem;
 }
 
-.language-toggle > [data-language][hidden] {
+.language-toggle > [data-language]:not(.is-lang-active) {
+  display: none;
+}
+
+html.nodo-lang-ready .language-toggle > [data-language]:not(.is-lang-active) {
   display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+html.nodo-lang-ready .language-toggle > [data-language].is-lang-active {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  overflow: visible !important;
 }
 
 .language-toggle > [data-language].is-lang-active > :first-child {

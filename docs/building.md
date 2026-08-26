@@ -99,6 +99,14 @@ The most basic NODO command is `driveFor()`.
 drive.driveFor(0.5, 800, this::opModeIsActive);
 ```
 
+For example:
+
+```java
+drive.driveFor(-0.4, 500, this::opModeIsActive);
+```
+
+drives backward at 40% power for 500 ms.
+
 </div>
 
 <div data-language="Blocks" markdown="1">
@@ -115,14 +123,6 @@ The command has two important values:
 * **Time** — how long the robot drives
 
 Positive power drives forward; Negative power drives backward.
-
-For example:
-
-```java
-drive.driveFor(-0.4, 500, this::opModeIsActive);
-```
-
-drives backward at 40% power for 500 ms.
 
 ### Important
 

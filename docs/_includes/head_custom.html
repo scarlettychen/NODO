@@ -1,7 +1,19 @@
 <style>
   .language-toggle > [data-language]:not(:first-of-type) { display: none; }
-  html.nodo-lang-ready .language-toggle > [data-language] { display: none !important; }
-  html.nodo-lang-ready .language-toggle > [data-language].is-lang-active { display: block !important; }
-  html.nodo-lang-ready .language-toggle > [data-language][hidden] { display: none !important; }
+  html.nodo-lang-ready .language-toggle > [data-language]:not(.is-lang-active) {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  html.nodo-lang-ready .language-toggle > [data-language].is-lang-active {
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
 </style>
 <script src="{{ '/assets/js/language-toggle.js' | relative_url }}" defer></script>

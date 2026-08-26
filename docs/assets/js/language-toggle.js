@@ -65,11 +65,11 @@
 
     if (visible) {
       panel.removeAttribute('hidden');
+      panel.removeAttribute('aria-hidden');
     } else {
-      panel.setAttribute('hidden', 'hidden');
+      panel.setAttribute('hidden', '');
+      panel.setAttribute('aria-hidden', 'true');
     }
-
-    panel.setAttribute('aria-hidden', visible ? 'false' : 'true');
   }
 
   function applyCategoryToGroup(group, category) {
@@ -134,14 +134,14 @@
       nav.appendChild(btn);
     }
 
-    group.parentNode.insertBefore(nav, group);
+    group.insertBefore(nav, panels[0]);
     group._nodoNav = nav;
     nav._nodoGroup = group;
   }
 
   function initGroup(group) {
     var panels = getDirectPanels(group);
-    if (!panels.length) {
+    if (panels.length < 2) {
       return false;
     }
 
@@ -158,6 +158,7 @@
     }
 
     event.preventDefault();
+    event.stopPropagation();
 
     var category = btn.getAttribute('data-lang-category');
     if (!VALID_CATEGORIES[category]) {
@@ -184,7 +185,7 @@
 
     applyCategory(readCategory());
     document.documentElement.classList.add('nodo-lang-ready');
-    document.addEventListener('click', onClick);
+    document.addEventListener('click', onClick, true);
 
     window.addEventListener('storage', function (event) {
       if (event.key === STORAGE_KEY) {

@@ -80,13 +80,11 @@ add pics
 
 </div>
 
-### You are now ready to start!
-
 </div>
 
-<a href="{% link quickstart.md %}">
-  <button>Click me</button>
-</a>
+### You are now ready to start!
+
+<a href="{{ '/quickstart/' | relative_url }}" class="btn btn-primary">Go to Quickstart</a>
 
 
 
