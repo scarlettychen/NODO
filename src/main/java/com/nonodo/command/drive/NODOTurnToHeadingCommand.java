@@ -2,54 +2,88 @@ package com.nonodo.command.drive;
 
 import com.nonodo.command.NODOCommand;
 import com.nonodo.hardware.NODOChassis;
+import com.nonodo.hardware.RelativeTurnController;
 
+/**
+ * Robot-relative pivot turn. {@code turnDegrees} is how far to rotate from the
+ * heading at {@link #init()} (positive = CCW / +yaw, negative = CW), not a
+ * field absolute angle.
+ *
+ * <p>Optional — prefer {@link NODOChassis#turnBy} if you are not using commands.
+ */
 public class NODOTurnToHeadingCommand implements NODOCommand {
 
-    private static final double TURN_GAIN = 0.02;
-    private static final double MAX_POWER = 0.8;
-    private static final double HEADING_TOLERANCE_DEG = 2.0;
+    private final RelativeTurnController turn;
+    private final double requestedDegrees;
 
-    private final NODOChassis chassis;
-    private final double targetYawDegrees;
-    private double error;
-
-    public NODOTurnToHeadingCommand(NODOChassis chassis, double targetYawDegrees) {
-        this.chassis = chassis;
-        this.targetYawDegrees = targetYawDegrees;
+    public NODOTurnToHeadingCommand(NODOChassis chassis, double turnDegrees) {
+        this.turn = new RelativeTurnController(chassis);
+        this.requestedDegrees = turnDegrees;
     }
 
     @Override
     public void init() {
-        error = headingError();
+        turn.start(requestedDegrees);
     }
 
     @Override
     public void execute() {
-        error = headingError();
-        double power = error * TURN_GAIN;
-        power = Math.max(-MAX_POWER, Math.min(MAX_POWER, power));
-
-        chassis.setMecanumPowers(power, -power, power, -power);
+        turn.update();
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(error) < HEADING_TOLERANCE_DEG;
+        return turn.isFinished();
     }
 
     @Override
     public void end() {
-        chassis.setMecanumPowers(0, 0, 0, 0);
+        turn.end();
     }
 
-    private double headingError() {
-        double headingError = targetYawDegrees - chassis.getYaw();
-        while (headingError > 180.0) {
-            headingError -= 360.0;
-        }
-        while (headingError < -180.0) {
-            headingError += 360.0;
-        }
-        return headingError;
+    /** Absolute IMU yaw being chased (set in init). */
+    public double getTarget() {
+        return turn.getTarget();
+    }
+
+    /** Requested relative turn in degrees (constructor argument). */
+    public double getRelativeTurnDegrees() {
+        return requestedDegrees;
+    }
+
+    public double getError() {
+        return turn.getError();
+    }
+
+    public double getRawError() {
+        return turn.getRawError();
+    }
+
+    public double getCommandedPower() {
+        return turn.getCommandedPower();
+    }
+
+    public double getFilteredHeading() {
+        return turn.getFilteredHeading();
+    }
+
+    public double getRawHeading() {
+        return turn.getRawHeading();
+    }
+
+    public boolean isInTolerance() {
+        return turn.isInTolerance();
+    }
+
+    public double getYawVelocityDegPerSec() {
+        return turn.getYawVelocityDegPerSec();
+    }
+
+    public double getPTerm() {
+        return turn.getPTerm();
+    }
+
+    public double getDTerm() {
+        return turn.getDTerm();
     }
 }

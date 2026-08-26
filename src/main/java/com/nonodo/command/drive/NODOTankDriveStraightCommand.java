@@ -1,23 +1,23 @@
 package com.nonodo.command.drive;
 
 import com.nonodo.command.NODOCommand;
-import com.nonodo.hardware.NODOChassis;
+import com.nonodo.hardware.NODOTankDrive;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * Time-based drive with gyro heading hold. Locks heading at {@link #init()}.
- * Optional — prefer {@link NODOChassis#driveFor} if you are not using commands.
+ * Tank timed drive with gyro heading hold.
+ * Optional — prefer {@link NODOTankDrive#driveFor} if you are not using commands.
  */
-public class NODODriveStraightCommand implements NODOCommand {
+public class NODOTankDriveStraightCommand implements NODOCommand {
 
-    private final NODOChassis chassis;
+    private final NODOTankDrive drive;
     private final double power;
     private final long timeMs;
     private ElapsedTime timer;
     private double targetHeading;
 
-    public NODODriveStraightCommand(NODOChassis chassis, double power, long timeMs) {
-        this.chassis = chassis;
+    public NODOTankDriveStraightCommand(NODOTankDrive drive, double power, long timeMs) {
+        this.drive = drive;
         this.power = power;
         this.timeMs = timeMs;
     }
@@ -25,12 +25,12 @@ public class NODODriveStraightCommand implements NODOCommand {
     @Override
     public void init() {
         timer = new ElapsedTime();
-        targetHeading = chassis.getRawHeading();
+        targetHeading = drive.getRawHeading();
     }
 
     @Override
     public void execute() {
-        chassis.applyDriveHold(power, targetHeading);
+        drive.applyDriveHold(power, targetHeading);
     }
 
     @Override
@@ -40,6 +40,6 @@ public class NODODriveStraightCommand implements NODOCommand {
 
     @Override
     public void end() {
-        chassis.stop();
+        drive.stop();
     }
 }

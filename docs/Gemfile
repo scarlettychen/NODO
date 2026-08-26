@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+# Matches GitHub Pages' Jekyll version and allowed plugins (remote themes, etc.).
+gem "github-pages", group: :jekyll_plugins
+
+# Required for `bundle exec jekyll serve` on Ruby 3+.
+gem "webrick", "~> 1.8"

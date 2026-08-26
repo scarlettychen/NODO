@@ -1,26 +1,30 @@
 package com.nonodo.blocks;
 
 import com.nonodo.UsageTracker;
-import com.nonodo.command.NODOCommand;
-import com.nonodo.command.drive.NODODriveStraightCommand;
 import com.nonodo.hardware.NODOChassis;
+import com.nonodo.hardware.NODOTankDrive;
 import com.nonodo.hardware.SmartDriveMotor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion;
 import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /**
- * Java-for-Blocks companion for rookie and budget teams that do not use dead-wheel odometry.
- * This is not a runnable OpMode. Drop {@code initializeDrive} into a Blocks init stack, then
- * call {@code driveStraight} / {@code turnToHeading} from the run stack.
+ * Java-for-Blocks companion. Blocks never use the command framework — drive blocks
+ * call the same chassis helpers as a LinearOpMode ({@code driveFor} / {@code strafeFor} /
+ * {@code turnBy} / {@code waitFor}).
  *
- * <p>Mecanum reuses {@link NODOChassis} and {@link NODODriveStraightCommand}. Tank uses the same
- * {@link SmartDriveMotor} voltage compensation and gyro math on {@code leftDrive}/{@code rightDrive}.
+ * <p>In init, call <b>one</b> of {@code initializeMecanumDrive} or {@code initializeTankDrive}
+ * (or {@code initializeDrive} with {@link DRIVE_TYPE#MECANUM()} / {@link DRIVE_TYPE#TANK()}),
+ * then {@code setControlHubOrientation}, then move blocks.
+ *
+ * <p>Mecanum and tank both use the same voltage compensation, raw-yaw gyro hold,
+ * and robot-relative PD turns. Strafe is mecanum-only.
  */
 @ExportClassToBlocks
 public class NodoBlocksFramework extends BlocksOpModeCompanion {
@@ -29,19 +33,12 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
     public static final int DRIVE_TYPE_TANK = 1;
 
     private static final double DEFAULT_KF = 0.03;
-    private static final double HEADING_P_GAIN = 0.02;
-    private static final double TURN_P_GAIN = 0.02;
-    private static final double TURN_I_GAIN = 0.002;
-    private static final double TURN_D_GAIN = 0.004;
-    private static final double HEADING_TOLERANCE_DEG = 2.0;
-    private static final double TURN_SETTLE_MS = 150.0;
-    private static final double TURN_TIMEOUT_SEC = 5.0;
-    private static final double DEFAULT_MAX_TURN_POWER = 0.8;
 
     private static int driveType = DRIVE_TYPE_MECANUM;
     private static boolean driveInitialized;
 
     private static NODOChassis chassis;
+    private static NODOTankDrive tankDrive;
     private static SmartDriveMotor frontLeft;
     private static SmartDriveMotor frontRight;
     private static SmartDriveMotor backLeft;
@@ -51,18 +48,54 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
     private static IMU imu;
 
     @ExportToBlocks(
-            heading = "No-Odo",
-            comment = "Call this once during init. 0 = Mecanum (frontLeft, frontRight, backLeft, backRight). "
-                    + "1 = Tank (leftDrive, rightDrive). Maps motors, sets BRAKE, and initializes the Control Hub IMU.",
-            tooltip = "Map mecanum (0) or tank (1) drive hardware",
-            parameterLabels = {"Drive Type (0=Mecanum, 1=Tank)"},
+            heading = "NODO",
+            comment = "Choose mecanum: maps frontLeft, frontRight, backLeft, backRight + Control Hub IMU. "
+                    + "Call once in init. Do not also call initializeTankDrive.",
+            tooltip = "Init mecanum drive"
+    )
+    public static void initializeMecanumDrive() {
+        initializeDriveInternal(DRIVE_TYPE_MECANUM);
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Choose tank: maps leftDrive, rightDrive + Control Hub IMU. "
+                    + "Call once in init. Do not also call initializeMecanumDrive. Strafe block will not work.",
+            tooltip = "Init tank drive"
+    )
+    public static void initializeTankDrive() {
+        initializeDriveInternal(DRIVE_TYPE_TANK);
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Choose drive type by name: MECANUM or TANK (case-insensitive). "
+                    + "Prefer initializeMecanumDrive / initializeTankDrive if those blocks are clearer. "
+                    + "Also accepts 0 = mecanum, 1 = tank for older programs.",
+            tooltip = "Init drive: MECANUM or TANK",
+            parameterLabels = {"Drive Type (MECANUM or TANK)"},
+            parameterDefaultValues = {"MECANUM"}
+    )
+    public static void initializeDrive(String driveTypeName) {
+        initializeDriveInternal(parseDriveType(driveTypeName));
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Initialize drive by type. Pass DRIVE_TYPE.MECANUM or DRIVE_TYPE.TANK constant blocks, "
+                    + "or 0 = mecanum / 1 = tank. Prefer initializeMecanumDrive / initializeTankDrive if simpler.",
+            tooltip = "Initialize drive (DRIVE_TYPE constant)",
+            parameterLabels = {"Drive Type"},
             parameterDefaultValues = {"0"}
     )
     public static void initializeDrive(int driveType) {
-        NodoBlocksFramework.driveType = (driveType == DRIVE_TYPE_TANK)
-                ? DRIVE_TYPE_TANK
-                : DRIVE_TYPE_MECANUM;
+        initializeDriveInternal(driveType == DRIVE_TYPE_TANK ? DRIVE_TYPE_TANK : DRIVE_TYPE_MECANUM);
+    }
+
+    private static void initializeDriveInternal(int type) {
+        driveType = (type == DRIVE_TYPE_TANK) ? DRIVE_TYPE_TANK : DRIVE_TYPE_MECANUM;
         chassis = null;
+        tankDrive = null;
         frontLeft = frontRight = backLeft = backRight = null;
         leftDrive = rightDrive = null;
         imu = null;
@@ -79,7 +112,7 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
             return;
         }
 
-        if (NodoBlocksFramework.driveType == DRIVE_TYPE_TANK) {
+        if (driveType == DRIVE_TYPE_TANK) {
             initializeTank();
         } else {
             initializeMecanum();
@@ -88,17 +121,157 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
         resetFieldHeading();
         driveInitialized = hasDriveMotors();
         addLine(driveInitialized
-                ? "No-Odo drive ready (" + driveTypeName() + ")"
-                : "No-Odo drive: no motors found. Check config names.");
+                ? "NODO drive ready (" + driveTypeName() + ")"
+                : "NODO drive: no motors found. Check config names.");
+        updateTelemetry();
+    }
+
+    private static int parseDriveType(String driveTypeName) {
+        if (driveTypeName == null || driveTypeName.trim().isEmpty()) {
+            addLine("initializeDrive: empty type — defaulting to MECANUM");
+            updateTelemetry();
+            return DRIVE_TYPE_MECANUM;
+        }
+        String normalized = driveTypeName.trim().toUpperCase();
+        if ("TANK".equals(normalized) || "1".equals(normalized)) {
+            return DRIVE_TYPE_TANK;
+        }
+        if ("MECANUM".equals(normalized) || "0".equals(normalized)) {
+            return DRIVE_TYPE_MECANUM;
+        }
+        addLine("initializeDrive: unknown '" + driveTypeName + "' — use MECANUM or TANK (default MECANUM)");
+        updateTelemetry();
+        return DRIVE_TYPE_MECANUM;
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Required. Sets Control Hub IMU orientation after you choose mecanum or tank init. "
+                    + "Logo and USB are direction names: UP, DOWN, FORWARD, BACKWARD, LEFT, RIGHT. "
+                    + "Wrong values break gyro heading.",
+            tooltip = "Set Control Hub logo + USB facing",
+            parameterLabels = {"Logo Facing", "USB Facing"},
+            parameterDefaultValues = {"UP", "FORWARD"}
+    )
+    public static void setControlHubOrientation(String logoFacing, String usbFacing) {
+        if (!ensureInitialized("setControlHubOrientation")) {
+            return;
+        }
+        LogoFacingDirection logo;
+        UsbFacingDirection usb;
+        try {
+            logo = parseLogo(logoFacing);
+            usb = parseUsb(usbFacing);
+        } catch (IllegalArgumentException e) {
+            addLine("setControlHubOrientation: " + e.getMessage());
+            updateTelemetry();
+            return;
+        }
+
+        if (chassis != null) {
+            chassis.setControlHubOrientation(logo, usb);
+        } else if (tankDrive != null) {
+            tankDrive.setControlHubOrientation(logo, usb);
+        } else if (imu != null) {
+            imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(logo, usb)));
+            imu.resetYaw();
+        } else {
+            addLine("setControlHubOrientation: no IMU available.");
+            updateTelemetry();
+            return;
+        }
+        addLine("Control Hub orientation: logo=" + logo + " usb=" + usb);
         updateTelemetry();
     }
 
     @ExportToBlocks(
-            heading = "No-Odo",
+            heading = "NODO",
+            comment = "Optional. Sets Expansion Hub IMU orientation (default hardware name imu2). "
+                    + "No-op if that IMU is missing. Same direction names as Control Hub: "
+                    + "UP, DOWN, FORWARD, BACKWARD, LEFT, RIGHT.",
+            tooltip = "Set Expansion Hub logo + USB facing (optional)",
+            parameterLabels = {"Logo Facing", "USB Facing"},
+            parameterDefaultValues = {"UP", "FORWARD"}
+    )
+    public static void setExpansionHubOrientation(String logoFacing, String usbFacing) {
+        if (!ensureInitialized("setExpansionHubOrientation")) {
+            return;
+        }
+        if (chassis == null) {
+            addLine("setExpansionHubOrientation: mecanum chassis required (skipped).");
+            updateTelemetry();
+            return;
+        }
+        LogoFacingDirection logo;
+        UsbFacingDirection usb;
+        try {
+            logo = parseLogo(logoFacing);
+            usb = parseUsb(usbFacing);
+        } catch (IllegalArgumentException e) {
+            addLine("setExpansionHubOrientation: " + e.getMessage());
+            updateTelemetry();
+            return;
+        }
+
+        chassis.setExpansionHubOrientation(logo, usb);
+        addLine("Expansion Hub orientation: logo=" + logo + " usb=" + usb);
+        updateTelemetry();
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Optional. Sets turn PD gains after init. Defaults are kP=0.035, kD=0.002, "
+                    + "maxPower=0.8. Call before turnToHeading. Higher kP = snappier; higher kD = more damping.",
+            tooltip = "Set turn PD gains + max power",
+            parameterLabels = {"kP", "kD", "Max Power"},
+            parameterDefaultValues = {"0.035", "0.002", "0.8"}
+    )
+    public static void setTurnPD(double kP, double kD, double maxPower) {
+        if (!ensureInitialized("setTurnPD")) {
+            return;
+        }
+        if (chassis != null) {
+            chassis.setTurnPD(kP, kD, maxPower);
+        } else if (tankDrive != null) {
+            tankDrive.setTurnPD(kP, kD, maxPower);
+        } else {
+            addLine("setTurnPD: drive not ready.");
+            updateTelemetry();
+            return;
+        }
+        addLine("Turn PD: kP=" + kP + " kD=" + kD + " max=" + maxPower);
+        updateTelemetry();
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Optional. Sets static feedforward (kF) for foam-tile friction on all drive motors. "
+                    + "Default at init is 0.03. Typical range 0.02–0.05. Too high = twitchy near zero; "
+                    + "too low = sluggish starts. Call after initializeMecanumDrive / initializeTankDrive.",
+            tooltip = "Set drive feedforward (kF)",
+            parameterLabels = {"Feedforward (kF)"},
+            parameterDefaultValues = {"0.03"}
+    )
+    public static void setFeedforward(double kF) {
+        if (!ensureInitialized("setFeedforward")) {
+            return;
+        }
+        if (chassis != null) {
+            chassis.setFeedforward(kF);
+        } else if (tankDrive != null) {
+            tankDrive.setFeedforward(kF);
+        } else {
+            applyFeedforwardToMappedMotors(kF);
+        }
+        addLine("Feedforward kF=" + kF);
+        updateTelemetry();
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
             comment = "Drives straight for durationSeconds at the given power (-1 to 1). "
-                    + "Battery compensation (13V / current voltage) lives in SmartDriveMotor.setDrivePower, "
-                    + "so the robot does not slow down as the pack sags. A P gyro loop holds the heading "
-                    + "captured at the start of the move.",
+                    + "Battery compensation lives in SmartDriveMotor. A P gyro loop holds the heading "
+                    + "captured at the start of the move (same for mecanum and tank).",
             tooltip = "Timed gyro-straight drive with battery compensation",
             parameterLabels = {"Duration (seconds)", "Power"},
             parameterDefaultValues = {"1.0", "0.5"}
@@ -112,87 +285,98 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
             return;
         }
         power = clamp(power, -1.0, 1.0);
+        long timeMs = Math.round(durationSeconds * 1000.0);
 
-        // Mecanum path reuses NODODriveStraightCommand: heading P-loop + SmartDriveMotor voltage scale.
-        if (driveType == DRIVE_TYPE_MECANUM && chassis != null) {
-            runBlocking(new NODODriveStraightCommand(chassis, power, Math.round(durationSeconds * 1000.0)));
+        if (driveType == DRIVE_TYPE_TANK && tankDrive != null) {
+            tankDrive.driveFor(power, timeMs, NodoBlocksFramework::isOpModeActive);
+            return;
+        }
+        if (chassis != null) {
+            chassis.driveFor(power, timeMs, NodoBlocksFramework::isOpModeActive);
             return;
         }
 
-        double targetHeading = getHeading();
-        ElapsedTime timer = new ElapsedTime();
-        while (isOpModeActive() && timer.seconds() < durationSeconds) {
-            // headingError > 0 means we need to rotate CCW; add to left / subtract from right.
-            double headingError = normalizeAngle(targetHeading - getHeading());
-            double correction = headingError * HEADING_P_GAIN;
-            applyLeftRightPower(power - correction, power + correction);
-        }
-        stopDrive();
+        addLine("driveStraight: drive hardware missing.");
+        updateTelemetry();
     }
 
     @ExportToBlocks(
-            heading = "No-Odo",
-            comment = "Pivots in place to an absolute IMU heading (degrees). Does not reset the IMU, "
-                    + "so 0 is the heading from initializeDrive. Uses a PID loop on heading error, "
-                    + "clamped to maxPower, and stops when within 2 degrees.",
-            tooltip = "Gyro PID turn to an absolute heading",
-            parameterLabels = {"Target Heading (degrees)", "Max Power"},
-            parameterDefaultValues = {"90.0", "0.8"}
+            heading = "NODO",
+            comment = "Strafes sideways for durationSeconds at the given power (-1 to 1). "
+                    + "Positive = right, negative = left. Gyro holds heading. Mecanum only.",
+            tooltip = "Timed gyro-hold strafe (mecanum)",
+            parameterLabels = {"Duration (seconds)", "Power"},
+            parameterDefaultValues = {"0.6", "0.5"}
     )
-    public static void turnToHeading(double targetHeading, double maxPower) {
-        if (!ensureInitialized("turnToHeading")) {
+    public static void strafe(double durationSeconds, double power) {
+        if (!ensureInitialized("strafe")) {
             return;
         }
-        if (chassis == null && imu == null) {
-            addLine("turnToHeading: IMU not found, turn skipped.");
+        if (durationSeconds <= 0) {
+            stopDrive();
+            return;
+        }
+        power = clamp(power, -1.0, 1.0);
+
+        if (driveType != DRIVE_TYPE_MECANUM || chassis == null) {
+            addLine("strafe: mecanum only (tank cannot strafe).");
             updateTelemetry();
             return;
         }
-        maxPower = Math.abs(maxPower);
-        if (maxPower < 0.05) {
-            maxPower = DEFAULT_MAX_TURN_POWER;
+
+        chassis.strafeFor(power, Math.round(durationSeconds * 1000.0), NodoBlocksFramework::isOpModeActive);
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Pauses the OpMode for durationSeconds with motors stopped. "
+                    + "Use between drive/strafe/turn blocks.",
+            tooltip = "Wait / pause",
+            parameterLabels = {"Duration (seconds)"},
+            parameterDefaultValues = {"0.5"}
+    )
+    public static void waitSeconds(double durationSeconds) {
+        if (durationSeconds <= 0) {
+            return;
         }
-        maxPower = Math.min(maxPower, 1.0);
-
-        ElapsedTime pidTimer = new ElapsedTime();
-        ElapsedTime settleTimer = new ElapsedTime();
-        ElapsedTime timeout = new ElapsedTime();
-        double previousError = headingError(targetHeading);
-        double integral = 0.0;
-        pidTimer.reset();
-        settleTimer.reset();
-        timeout.reset();
-
-        while (isOpModeActive() && timeout.seconds() < TURN_TIMEOUT_SEC) {
-            double error = headingError(targetHeading);
-            double dt = pidTimer.seconds();
-            pidTimer.reset();
-            if (dt <= 0.0 || dt > 0.2) {
-                dt = 0.02;
-            }
-
-            // Freeze I when far from the target so a long approach does not wind up.
-            if (Math.abs(error) < 20.0) {
-                integral += error * dt;
-            } else {
-                integral = 0.0;
-            }
-            double derivative = (error - previousError) / dt;
-            previousError = error;
-
-            double turnPower = (error * TURN_P_GAIN) + (integral * TURN_I_GAIN) + (derivative * TURN_D_GAIN);
-            turnPower = clamp(turnPower, -maxPower, maxPower);
-            applyLeftRightPower(turnPower, -turnPower);
-
-            if (Math.abs(error) < HEADING_TOLERANCE_DEG) {
-                if (settleTimer.milliseconds() >= TURN_SETTLE_MS) {
-                    break;
-                }
-            } else {
-                settleTimer.reset();
+        long timeMs = Math.round(durationSeconds * 1000.0);
+        if (chassis != null) {
+            chassis.waitFor(timeMs, NodoBlocksFramework::isOpModeActive);
+        } else if (tankDrive != null) {
+            tankDrive.waitFor(timeMs, NodoBlocksFramework::isOpModeActive);
+        } else {
+            ElapsedTime timer = new ElapsedTime();
+            while (isOpModeActive() && timer.milliseconds() < timeMs) {
+                // idle
             }
         }
-        stopDrive();
+    }
+
+    @ExportToBlocks(
+            heading = "NODO",
+            comment = "Pivots in place by a robot-relative angle (degrees) from the current heading. "
+                    + "Positive = CCW / +yaw, negative = CW. Mecanum and tank use the same PD turn "
+                    + "(no static kF). Max Power is unused for PD (kept for Blocks compatibility).",
+            tooltip = "Gyro relative PD turn (mecanum + tank)",
+            parameterLabels = {"Turn Degrees (relative)", "Max Power"},
+            parameterDefaultValues = {"90.0", "0.8"}
+    )
+    public static void turnToHeading(double turnDegrees, double maxPower) {
+        if (!ensureInitialized("turnToHeading")) {
+            return;
+        }
+
+        if (driveType == DRIVE_TYPE_TANK && tankDrive != null) {
+            tankDrive.turnBy(turnDegrees, NodoBlocksFramework::isOpModeActive);
+            return;
+        }
+        if (chassis != null) {
+            chassis.turnBy(turnDegrees, NodoBlocksFramework::isOpModeActive);
+            return;
+        }
+
+        addLine("turnToHeading: IMU / drive not found, turn skipped.");
+        updateTelemetry();
     }
 
     private static void initializeMecanum() {
@@ -221,13 +405,21 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
     }
 
     private static void initializeTank() {
-        leftDrive = mapMotor("leftDrive", "left_drive", "left");
-        rightDrive = mapMotor("rightDrive", "right_drive", "right");
-        if (rightDrive != null) {
-            rightDrive.reverse();
+        try {
+            tankDrive = new NODOTankDrive(hardwareMap, DEFAULT_KF);
+            leftDrive = tankDrive.getLeft();
+            rightDrive = tankDrive.getRight();
+            addLine("Mapped tank via NODOTankDrive (leftDrive / rightDrive).");
+        } catch (RuntimeException e) {
+            tankDrive = null;
+            leftDrive = mapMotor("leftDrive", "left_drive", "left");
+            rightDrive = mapMotor("rightDrive", "right_drive", "right");
+            if (rightDrive != null) {
+                rightDrive.reverse();
+            }
+            initializeImu();
+            addLine("Tank mapped individually: " + e.getMessage());
         }
-        initializeImu();
-        addLine("Mapped tank motors leftDrive / rightDrive.");
     }
 
     private static void initializeImu() {
@@ -256,93 +448,78 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
         return null;
     }
 
-    /**
-     * Runs a NODOCommand to completion while still honoring the driver's STOP button.
-     */
-    private static void runBlocking(NODOCommand command) {
-        command.init();
-        while (isOpModeActive() && !command.isFinished()) {
-            command.execute();
-        }
-        command.end();
-    }
-
-    private static void applyLeftRightPower(double leftPower, double rightPower) {
-        if (driveType == DRIVE_TYPE_TANK) {
-            if (leftDrive != null) {
-                leftDrive.setDrivePower(leftPower);
-            }
-            if (rightDrive != null) {
-                rightDrive.setDrivePower(rightPower);
-            }
-            return;
-        }
-        if (chassis != null) {
-            chassis.setMecanumPowers(leftPower, rightPower, leftPower, rightPower);
-            return;
-        }
+    private static void applyFeedforwardToMappedMotors(double kF) {
         if (frontLeft != null) {
-            frontLeft.setDrivePower(leftPower);
-        }
-        if (backLeft != null) {
-            backLeft.setDrivePower(leftPower);
+            frontLeft.setKF(kF);
         }
         if (frontRight != null) {
-            frontRight.setDrivePower(rightPower);
+            frontRight.setKF(kF);
+        }
+        if (backLeft != null) {
+            backLeft.setKF(kF);
         }
         if (backRight != null) {
-            backRight.setDrivePower(rightPower);
+            backRight.setKF(kF);
+        }
+        if (leftDrive != null) {
+            leftDrive.setKF(kF);
+        }
+        if (rightDrive != null) {
+            rightDrive.setKF(kF);
         }
     }
 
     private static void stopDrive() {
-        applyLeftRightPower(0.0, 0.0);
-    }
-
-    private static double getHeading() {
+        if (tankDrive != null) {
+            tankDrive.stop();
+            return;
+        }
         if (chassis != null) {
-            return chassis.getHeading();
+            chassis.stop();
+            return;
         }
-        if (imu != null) {
-            return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        if (leftDrive != null) {
+            leftDrive.setDrivePower(0, false);
         }
-        return 0.0;
+        if (rightDrive != null) {
+            rightDrive.setDrivePower(0, false);
+        }
+        if (frontLeft != null) {
+            frontLeft.setDrivePower(0, false);
+        }
+        if (frontRight != null) {
+            frontRight.setDrivePower(0, false);
+        }
+        if (backLeft != null) {
+            backLeft.setDrivePower(0, false);
+        }
+        if (backRight != null) {
+            backRight.setDrivePower(0, false);
+        }
     }
 
     private static void resetFieldHeading() {
-        if (chassis != null) {
+        if (tankDrive != null) {
+            tankDrive.resetYaw();
+        } else if (chassis != null) {
             chassis.resetYaw();
         } else if (imu != null) {
             imu.resetYaw();
         }
     }
 
-    private static double headingError(double targetHeading) {
-        return normalizeAngle(targetHeading - getHeading());
-    }
-
-    private static double normalizeAngle(double degrees) {
-        while (degrees > 180.0) {
-            degrees -= 360.0;
-        }
-        while (degrees < -180.0) {
-            degrees += 360.0;
-        }
-        return degrees;
-    }
-
     private static boolean ensureInitialized(String methodName) {
         if (driveInitialized && hasDriveMotors()) {
             return true;
         }
-        addLine(methodName + ": call initializeDrive first.");
+        addLine(methodName + ": call initializeMecanumDrive or initializeTankDrive first.");
         updateTelemetry();
         return false;
     }
 
     private static boolean hasDriveMotors() {
         if (driveType == DRIVE_TYPE_TANK) {
-            return leftDrive != null || rightDrive != null;
+            return tankDrive != null || leftDrive != null || rightDrive != null;
         }
         return chassis != null
                 || frontLeft != null || frontRight != null
@@ -358,6 +535,32 @@ public class NodoBlocksFramework extends BlocksOpModeCompanion {
 
     private static String driveTypeName() {
         return driveType == DRIVE_TYPE_TANK ? "tank" : "mecanum";
+    }
+
+    private static LogoFacingDirection parseLogo(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("logo facing is empty");
+        }
+        try {
+            return LogoFacingDirection.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "bad logo '" + value + "' (use UP DOWN FORWARD BACKWARD LEFT RIGHT)"
+            );
+        }
+    }
+
+    private static UsbFacingDirection parseUsb(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("USB facing is empty");
+        }
+        try {
+            return UsbFacingDirection.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "bad USB '" + value + "' (use UP DOWN FORWARD BACKWARD LEFT RIGHT)"
+            );
+        }
     }
 
     private static double clamp(double value, double min, double max) {

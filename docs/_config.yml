@@ -1,0 +1,23 @@
+title: NODO Library
+description: Documentation for the NODO FTC autonomous library
+author: Scarlett
+
+# Live site: https://scarlettychen.github.io/NODO/
+permalink: pretty
+
+remote_theme: just-the-docs/just-the-docs
+
+search_enabled: true
+heading_anchors: true
+color_scheme: nil
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-seo-tag
+
+# Maintainer notes only — not published as pages.
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

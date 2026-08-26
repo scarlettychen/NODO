@@ -6,8 +6,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import java.util.Iterator;
 
 /**
- * Exponential moving-average of Control Hub battery voltage. Raw {@link VoltageSensor}
- * readings jump when motors stall; this filter keeps feedforward scaling stable.
+ * Exponential moving-average of Control Hub battery voltage. Uses low pass filter to smooth out noise.
  */
 public class BatteryVoltageFilter {
 

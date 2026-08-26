@@ -1,3 +1,11 @@
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.iml
+.idea/*
+!.idea/runConfigurations/
+
 # Logs
 logs
 *.log

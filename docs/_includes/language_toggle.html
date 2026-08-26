@@ -1,0 +1,10 @@
+{% comment %}
+  Optional per-section toggle. Usually unnecessary — the header toggle is site-wide.
+  Include inside a .language-toggle group if you want a local reminder:
+
+  {% include language_toggle.html %}
+{% endcomment %}
+<nav class="nodo-lang-toggle" role="group" aria-label="Documentation language">
+  <button type="button" class="nodo-lang-toggle__btn" data-language="java" aria-pressed="true">Java</button>
+  <button type="button" class="nodo-lang-toggle__btn" data-language="blocks" aria-pressed="false">FTC Blocks</button>
+</nav>

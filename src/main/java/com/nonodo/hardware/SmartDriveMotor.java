@@ -46,11 +46,29 @@ public class SmartDriveMotor {
         kF = newKF;
     }
 
+    /** Alias for {@link #setKF(double)} — static tile-friction feedforward. */
+    public void setFeedforward(double newKF) {
+        setKF(newKF);
+    }
+
     public void reverse() {
-        motor.setDirection(DcMotor.Direction.REVERSE);
+        setDirection(DcMotor.Direction.REVERSE);
+    }
+
+    public void setDirection(DcMotor.Direction direction) {
+        motor.setDirection(direction);
     }
 
     public void setDrivePower(double targetPower) {
+        setDrivePower(targetPower, true);
+    }
+
+    /**
+     * @param applyFeedforward tile-friction {@code kF}. Turn-in-place should pass
+     *                         {@code false}: near the setpoint P is smaller than {@code kF},
+     *                         so feedforward flips sign every loop and the robot shakes.
+     */
+    public void setDrivePower(double targetPower, boolean applyFeedforward) {
         batteryVoltageFilter.update();
         double voltage = batteryVoltageFilter.getVoltage();
         // A 13V scale keeps joystick/auto power feeling the same as the battery sags.
@@ -60,10 +78,12 @@ public class SmartDriveMotor {
         }
         double adjustedPower = targetPower * (NOMINAL_VOLTAGE / voltage);
 
-        if (adjustedPower > FEEDFORWARD_DEADBAND) {
-            adjustedPower += kF;
-        } else if (adjustedPower < -FEEDFORWARD_DEADBAND) {
-            adjustedPower -= kF;
+        if (applyFeedforward) {
+            if (adjustedPower > FEEDFORWARD_DEADBAND) {
+                adjustedPower += kF;
+            } else if (adjustedPower < -FEEDFORWARD_DEADBAND) {
+                adjustedPower -= kF;
+            }
         }
 
         motor.setPower(adjustedPower);
