@@ -49,7 +49,7 @@ dependencies {
     implementation 'org.ftclib.ftclib:core:2.1.1'
 
     // NODO
-    implementation 'com.github.scarlettychen:NODO:1.0.0'
+    implementation 'com.github.scarlettychen:NODO:Tag'
 }
 ```
 
