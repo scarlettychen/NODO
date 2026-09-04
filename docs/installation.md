@@ -67,23 +67,30 @@ Go to the [NODO GitHub Releases](https://github.com/scarlettychen/NODO/releases/
 
 ## 2. Open OnBot Java
 
-On the Robot Controller, open **OnBot Java** (Manage from the driver station, or use the RC web interface).
+On the Robot Controller, open **OnBot Java**.
+
+![open on-bot java]({{ '/images/clickintoonbotjava.png' | relative_url }})
 
 ## 3. Upload the library
 
 1. Click **Upload**
-2. Select **`nodo-1.0.0-beta.1.jar`** (~43 KB thin JAR — only `com.nonodo` classes)
-3. Click **Build Everything**
 
-Do **not** upload an AAR from JitPack, a fat/shadow JAR, or the FTC SDK. Use the release `.jar` only.
+   ![uploading]({{ '/images/clickupload.png' | relative_url }})
 
-![OnBot Java upload screen]({{ '/images/OnBotJava.png' | relative_url }})
+2. Select **`nodo-1.0.0-beta.1.jar`**
 
-When the build succeeds, NODO blocks appear under **NODO Init** and **NODO Run** in FTC Blocks.
+   ![select]({{ '/images/uploadjar.png' | relative_url }})
+
+3. Once it is done updating, click close
+
+   ![close]({{ '/images/clickoutofupdate.png' | relative_url }})
+
+
+When the upload succeeds, NODO library will appear under external libraries in OnBot Java, and NODO blocks appear under **NODO Init** and **NODO Run** in FTC Blocks.
 
 ### If upload says classes already exist in FtcRobotController
 
-OnBot rejects a library when **any** class in the JAR can already be loaded from the installed Robot Controller app. That is **not** “SDK classes inside the JAR” — our release JAR is thin and only contains `com.nonodo.*`.
+OnBot rejects a library when **any** class in the JAR can already be loaded from the installed Robot Controller app. 
 
 Usual cause: this robot already has NODO baked in from **Android Studio** (`implementation 'com.github.scarlettychen:NODO:...'` in TeamCode). Pick **one** install path per robot:
 
@@ -92,7 +99,7 @@ Usual cause: this robot already has NODO baked in from **Android Studio** (`impl
 | **Blocks / OnBot only** | Remove the Gradle NODO dependency, rebuild/reinstall the RC app (or use a stock REV/FTC RC), then upload the thin JAR |
 | **Android Studio only** | Keep the Gradle dependency; do **not** also upload the JAR on OnBot |
 
-Also delete any older `nodo*.jar` under **ExternalLibraries** on the RC before re-uploading.
+Also delete any older `nodo*.jar` under **ExternalLibraries** in OnBot Java before re-uploading.
 
 </div>
 
