@@ -25,7 +25,7 @@ public class SampleNoOdoTeleOp extends OpMode {
         );
         // Optional if you have an Expansion Hub IMU:
         // chassis.setExpansionHubOrientation(LogoFacingDirection.UP, UsbFacingDirection.FORWARD);
-        chassis.setMotorDirections(
+        chassis.applyMotorDirections(
                 DcMotor.Direction.FORWARD,
                 DcMotor.Direction.REVERSE,
                 DcMotor.Direction.FORWARD,

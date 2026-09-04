@@ -7,76 +7,92 @@ nav_order: 2
 # Installing NODO
 #### Pick Java or Blocks/OnBot Java
 
-<div class="language-toggle" data-language-group="some-unique-id" markdown="1">
+<div class="language-toggle" data-language-group="install-main" markdown="1">
 
 <div data-language="Java/OnBot Java" markdown="1">
 
 ## Android Studio Installation Guide
 
-NODO is distributed as an AAR Android library via Gradle. Follow these two quick steps to add it to your FTC project.
+NODO is distributed as an Android library via Gradle (JitPack). Follow these steps to add it to your FTC project.
 
 ## 1. Add the Repository
-Open your FTC Android Studio project and find the **root** 'build.gradle' file (the one for the whole project, not the TeamCode one).
 
-Scroll down to the 'repositories' block inside 'allprojects' and add JitPack;
+Open your FTC Android Studio project and find the **root** `build.gradle` file (the whole project, not TeamCode).
 
-```java
+In the `allprojects { repositories { ... } }` block, add JitPack:
+
+```gradle
 allprojects {
     repositories {
         mavenCentral()
-        google() 
-        
-        // Add this!
+        google()
+
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-## 2. Edit build.gradle
-In your Android Studio project, navigate to 'build.gradle' (Module :TeamCode) in Grade Scripts.
+## 2. Add the dependency
 
-Scroll down to the 'dependencies' block, and add:
+Open **TeamCode** `build.gradle` and add:
 
 ```gradle
-implementation 'com.github.scarlettychen:NODO:1.0.0'
+implementation 'com.github.scarlettychen:NODO:v1.0.0-beta.1'
 ```
 
-You should now have something that looks like this:
+Example `dependencies` block:
 
 ```gradle
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.ftclib.ftclib:core:2.1.1'
 
-    // NODO
-    implementation 'com.github.scarlettychen:NODO:Tag'
+    implementation 'com.github.scarlettychen:NODO:v1.0.0-beta.1'
 }
 ```
 
-## 2. Sync Gradle
-After modify the file, a banner will pop up at the top of Android Studio prompting you to Sync Now. Click it to download the library. You are now good to go!
+## 3. Sync Gradle
+
+Click **Sync Now** when Android Studio prompts you. NODO classes under `com.nonodo` will resolve against your existing FTC SDK.
 
 </div>
 
 <div data-language="Blocks/OnBot Java" markdown="1">
 
-## Blocks/OnBotJava Installation Guide
+## Blocks / OnBot Java Installation Guide
 
-## 1. Go to the NODO Github Release Page
+## 1. Download the JAR
 
-Linked [here](https://github.com/scarlettychen/NODO).
+Go to the [NODO GitHub Releases](https://github.com/scarlettychen/NODO/releases/latest) page and download **`nodo-1.0.0-beta.1.jar`** (attached to the release).
 
-## 2. Under releases, download nodo-v1.0.0.jar.
-add pics
+## 2. Open OnBot Java
 
-## 3. Open the Robot Controller's OnBot Java.
-add pics
-## 4. Click **Upload**
-add pics
-## 5. Upload the NODO `.jar`
-add pics
-## 6. Click**Build Everything**
-add pics
+On the Robot Controller, open **OnBot Java** (Manage from the driver station, or use the RC web interface).
+
+## 3. Upload the library
+
+1. Click **Upload**
+2. Select **`nodo-1.0.0-beta.1.jar`** (~43 KB thin JAR — only `com.nonodo` classes)
+3. Click **Build Everything**
+
+Do **not** upload an AAR from JitPack, a fat/shadow JAR, or the FTC SDK. Use the release `.jar` only.
+
+![OnBot Java upload screen]({{ '/images/OnBotJava.png' | relative_url }})
+
+When the build succeeds, NODO blocks appear under **NODO Init** and **NODO Run** in FTC Blocks.
+
+### If upload says classes already exist in FtcRobotController
+
+OnBot rejects a library when **any** class in the JAR can already be loaded from the installed Robot Controller app. That is **not** “SDK classes inside the JAR” — our release JAR is thin and only contains `com.nonodo.*`.
+
+Usual cause: this robot already has NODO baked in from **Android Studio** (`implementation 'com.github.scarlettychen:NODO:...'` in TeamCode). Pick **one** install path per robot:
+
+| Path | What to do |
+|------|------------|
+| **Blocks / OnBot only** | Remove the Gradle NODO dependency, rebuild/reinstall the RC app (or use a stock REV/FTC RC), then upload the thin JAR |
+| **Android Studio only** | Keep the Gradle dependency; do **not** also upload the JAR on OnBot |
+
+Also delete any older `nodo*.jar` under **ExternalLibraries** on the RC before re-uploading.
 
 </div>
 
@@ -85,15 +101,3 @@ add pics
 ### You are now ready to start!
 
 <a href="{{ '/quickstart/' | relative_url }}" class="btn btn-primary">Go to Quickstart</a>
-
-
-
-
-
-
-
-
-
-
-
-

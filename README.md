@@ -19,31 +19,30 @@ In `TeamCode/build.gradle`:
 ```gradle
 repositories {
     mavenCentral()
-    // or JitPack / your publish URL when released
+    google()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
 
-    implementation 'com.github.scarlettychen:NODO:1.0.0'
+    implementation 'com.github.scarlettychen:NODO:v1.0.0-beta.1'
 }
 ```
 
 Then sync. Classes under `com.nonodo` resolve against the FTC SDK already on your classpath.
 
-### What `implementation` does
-
-`implementation 'com.github.scarlettychen:NODO:1.0.0'` is JitPack coordinates for this repo: **GitHub user** `scarlettychen`, **repo** `NODO`, **tag** `1.0.0`.
+JitPack coordinates: **GitHub** `scarlettychen`, **repo** `NODO`, **tag** `v1.0.0-beta.1`.
 
 When you sync / build, Gradle:
 
 1. Looks in the repositories you listed (Maven Central, JitPack, etc.).
-2. Downloads the NODO AAR (compiled library) for that version.
-3. Puts it on TeamCode’s compile + runtime classpath so you can `import com.nonodo...` and the classes are packaged into the Robot Controller APK you deploy.
+2. Downloads the NODO AAR for that tag.
+3. Puts it on TeamCode's compile + runtime classpath so you can `import com.nonodo...` and the classes are packaged into the Robot Controller APK you deploy.
 
-NODO itself uses `compileOnly` for FTC `RobotCore` / `Hardware`, so those are **not** inside the AAR — your existing FTC project already provides them. You only pull in NODO’s code.
+NODO itself uses `compileOnly` for FTC `RobotCore` / `Hardware`, so those are **not** inside the AAR — your existing FTC project already provides them.
 
-Until you publish a GitHub release tag and JitPack builds it, the dependency will not resolve. See **Releasing** below.
+**OnBot / Blocks:** download [`nodo-1.0.0-beta.1.jar`](https://github.com/scarlettychen/NODO/releases/latest) from GitHub Releases and upload via OnBot Java. See the [docs](https://scarlettychen.github.io/NODO/installation/).
 
 ### Chassis only (no commands)
 

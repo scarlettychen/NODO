@@ -42,7 +42,7 @@ private static double kF = 0.03;
 
 You can use the dedicated setter to set kF.
 
-1. Look in the **NODO** Blocks menu.
+1. Look in the **NODO Init** Blocks menu.
 2. Drag out the **`setFeedforward(kF)`** block.
 3. Snap a math number block to it and set it to `0.03`.
 4. Place this directly below your `initializeMecanumDrive` block.
@@ -99,11 +99,11 @@ drive.setTurnToleranceDegrees(3.0);
 
 Use the dedicated Turn PD block to override the default values.
 
-1. Look in the **NODO** Blocks menu.
+1. Look in the **NODO Init** Blocks menu.
 2. Drag out the **`setTurnPD(kP, kD, maxPower)`** block.
 3. Snap three math number blocks to it.
 4. Set them to `0.04`, `0.0025`, and `0.4`, respectively.
-5. Place this in your initialization sequence, before running any `turnToHeading` blocks.
+5. Place this in your initialization sequence, before running any `turnBy` blocks.
 
 </div>
 

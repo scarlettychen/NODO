@@ -32,6 +32,11 @@ public class NODOChassis {
     private static String controlHubImuName = "imu";
     private static String expansionHubImuName = "imu2";
 
+    private static DcMotor.Direction frontLeftDir = DcMotor.Direction.FORWARD;
+    private static DcMotor.Direction frontRightDir = DcMotor.Direction.REVERSE;
+    private static DcMotor.Direction backLeftDir = DcMotor.Direction.FORWARD;
+    private static DcMotor.Direction backRightDir = DcMotor.Direction.REVERSE;
+
     private final SmartDriveMotor frontLeft;
     private final SmartDriveMotor frontRight;
     private final SmartDriveMotor backLeft;
@@ -50,6 +55,22 @@ public class NODOChassis {
         frontRightName = frontRight;
         backLeftName = backLeft;
         backRightName = backRight;
+    }
+
+    /**
+     * Call in {@code init()} before {@code new NODOChassis(...)} so directions match your wiring.
+     * Order is frontLeft, frontRight, backLeft, backRight. Default is left FORWARD, right REVERSE.
+     */
+    public static void setMotorDirections(
+            DcMotor.Direction frontLeftDirection,
+            DcMotor.Direction frontRightDirection,
+            DcMotor.Direction backLeftDirection,
+            DcMotor.Direction backRightDirection
+    ) {
+        frontLeftDir = frontLeftDirection;
+        frontRightDir = frontRightDirection;
+        backLeftDir = backLeftDirection;
+        backRightDir = backRightDirection;
     }
 
     /**
@@ -73,8 +94,10 @@ public class NODOChassis {
         backLeft = new SmartDriveMotor(hwMap, backLeftName, kF);
         backRight = new SmartDriveMotor(hwMap, backRightName, kF);
 
-        frontRight.reverse();
-        backRight.reverse();
+        frontLeft.setDirection(frontLeftDir);
+        frontRight.setDirection(frontRightDir);
+        backLeft.setDirection(backLeftDir);
+        backRight.setDirection(backRightDir);
 
         controlHubImu = hwMap.get(IMU.class, controlHubImuName);
         expansionHubImu = hwMap.tryGet(IMU.class, expansionHubImuName);
@@ -108,16 +131,17 @@ public class NODOChassis {
     }
 
     /**
-     * Call from {@code init()} after constructing the chassis.
-     * Order is frontLeft, frontRight, backLeft, backRight.
-     * Default is left FORWARD, right REVERSE.
+     * Updates motor directions on an already-constructed chassis. Also stores values for the
+     * next {@code new NODOChassis(...)}. Prefer {@link #setMotorDirections} before construct.
      */
-    public void setMotorDirections(
-            DcMotor.Direction frontLeftDir,
-            DcMotor.Direction frontRightDir,
-            DcMotor.Direction backLeftDir,
-            DcMotor.Direction backRightDir
+    public void applyMotorDirections(
+            DcMotor.Direction frontLeftDirection,
+            DcMotor.Direction frontRightDirection,
+            DcMotor.Direction backLeftDirection,
+            DcMotor.Direction backRightDirection
     ) {
+        setMotorDirections(
+                frontLeftDirection, frontRightDirection, backLeftDirection, backRightDirection);
         frontLeft.setDirection(frontLeftDir);
         frontRight.setDirection(frontRightDir);
         backLeft.setDirection(backLeftDir);
@@ -274,12 +298,18 @@ public class NODOChassis {
      * {@code this::opModeIsActive}. Does not use the command framework.
      */
     public void driveFor(double power, long timeMs, BooleanSupplier isActive) {
-        double targetHeading = getRawHeading();
-        ElapsedTime timer = new ElapsedTime();
-        while (isActive.getAsBoolean() && timer.milliseconds() < timeMs) {
-            applyDriveHold(power, targetHeading);
-        }
-        stop();
+        final double targetHeading = getRawHeading();
+        BlockingLoops.driveFor(power, timeMs, isActive, new BlockingLoops.DriveTick() {
+            @Override
+            public void tick(double drivePower) {
+                applyDriveHold(drivePower, targetHeading);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                stop();
+            }
+        });
     }
 
     /**
@@ -287,12 +317,18 @@ public class NODOChassis {
      * For {@code LinearOpMode}, pass {@code this::opModeIsActive}.
      */
     public void strafeFor(double power, long timeMs, BooleanSupplier isActive) {
-        double targetHeading = getRawHeading();
-        ElapsedTime timer = new ElapsedTime();
-        while (isActive.getAsBoolean() && timer.milliseconds() < timeMs) {
-            applyStrafeHold(power, targetHeading);
-        }
-        stop();
+        final double targetHeading = getRawHeading();
+        BlockingLoops.driveFor(power, timeMs, isActive, new BlockingLoops.DriveTick() {
+            @Override
+            public void tick(double strafePower) {
+                applyStrafeHold(strafePower, targetHeading);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                stop();
+            }
+        });
     }
 
     /**
@@ -302,20 +338,16 @@ public class NODOChassis {
     public void turnBy(double relativeDegrees, BooleanSupplier isActive) {
         RelativeTurnController turn = new RelativeTurnController(this);
         turn.start(relativeDegrees);
-        while (isActive.getAsBoolean() && !turn.update()) {
-            // PD turn ticks until settled or OpMode stops.
+        try {
+            while (isActive.getAsBoolean() && !turn.update()) {
+                BlockingLoops.yield();
+            }
+        } finally {
+            turn.end();
         }
-        turn.end();
     }
 
-    /**
-     * Blocking wait that still yields while {@code isActive} is true.
-     * For {@code LinearOpMode}, pass {@code this::opModeIsActive}.
-     */
     public void waitFor(long timeMs, BooleanSupplier isActive) {
-        ElapsedTime timer = new ElapsedTime();
-        while (isActive.getAsBoolean() && timer.milliseconds() < timeMs) {
-            // idle
-        }
+        BlockingLoops.waitFor(timeMs, isActive);
     }
 }

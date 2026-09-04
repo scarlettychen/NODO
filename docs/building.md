@@ -111,7 +111,7 @@ drives backward at 40% power for 500 ms.
 
 <div data-language="Blocks" markdown="1">
 
-ftc blocks image needed
+Use the **driveFor** block in **NODO Run** (power -1 to 1, duration in **milliseconds**).
 
 </div>
 
@@ -166,7 +166,7 @@ Negative power:
 
 <div data-language="Blocks" markdown="1">
 
-need blocks image
+Use the **strafeFor** block in **NODO Run** (power -1 to 1, duration in **milliseconds**). Mecanum only.
 
 </div>
 
@@ -216,7 +216,7 @@ drive.turnBy(90, this::opModeIsActive);
 
 <div data-language="Blocks" markdown="1">
 
-need blocks image
+Use **turnBy** in **NODO Run** (relative degrees; not timed).
 
 </div>
 
@@ -266,7 +266,7 @@ drive.waitFor(250, this::opModeIsActive);
 
 <div data-language="Blocks" markdown="1">
 
-need blocks image
+Use the **waitFor** block in **NODO Run** (duration in **milliseconds**).
 
 </div>
 
@@ -446,13 +446,20 @@ The routine then manages which step is currently running.
 Blocks uses the same basic idea as direct drivetrain helpers:
 
 ```text
-driveStraight
+[NODO Init]
+initializeMecanumDrive
+setControlHubOrientation
+
+        ↓ START
+
+[NODO Run]
+driveFor
     ↓
-waitSeconds
+waitFor
     ↓
-turnToHeading
+turnBy
     ↓
-driveStraight
+driveFor
 ```
 
 All three approaches use the same underlying NODO motion system.

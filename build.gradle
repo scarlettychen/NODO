@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.nodo'
-version = '1.0.0'
+version = '1.0.0-beta.1'
 
 android {
     namespace 'com.nonodo'
@@ -20,6 +20,17 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    packaging {
+        // Never embed third-party JARs into the AAR/classes.jar.
+        resources {
+            excludes += [
+                    'META-INF/*.SF',
+                    'META-INF/*.DSA',
+                    'META-INF/*.RSA'
+            ]
+        }
+    }
+
     publishing {
         singleVariant('release') {
             withSourcesJar()
@@ -28,9 +39,69 @@ android {
 }
 
 dependencies {
-    // Provided by the team's FtcRobotController / TeamCode app — not bundled in the AAR.
+    // THIN LIBRARY: FTC SDK is compile-time only. Do NOT use implementation/api/runtimeOnly
+    // for RobotCore / Hardware — that would fat-jar the SDK into the AAR teams download.
+    // Teams already have the FTC SDK on their Robot Controller classpath.
     compileOnly 'org.firstinspires.ftc:RobotCore:9.0.1'
     compileOnly 'org.firstinspires.ftc:Hardware:9.0.1'
+}
+
+// OnBot Java / Blocks: thin JAR only (NODO classes). Upload build/outputs/jar/nodo-*.jar
+def releaseAar = layout.buildDirectory.file("outputs/aar/${rootProject.name}-release.aar")
+def thinJarOut = layout.buildDirectory.dir('outputs/jar')
+
+tasks.register('exportReleaseJar', Copy) {
+    description = 'Extract thin classes.jar from the release AAR (no FTC SDK bundled).'
+    group = 'build'
+    dependsOn 'assembleRelease'
+    from(zipTree(releaseAar)) {
+        include 'classes.jar'
+    }
+    into thinJarOut
+    rename('classes.jar', "${rootProject.name}-${version}.jar")
+}
+
+tasks.register('verifyThinJar') {
+    description = 'Fail if the exported JAR contains FTC/Qualcomm SDK classes (must stay thin).'
+    group = 'verification'
+    dependsOn 'exportReleaseJar'
+
+    doLast {
+        def jarFile = thinJarOut.get().asFile.toPath().resolve("${rootProject.name}-${version}.jar").toFile()
+        if (!jarFile.exists()) {
+            throw new GradleException("Missing thin JAR: ${jarFile}")
+        }
+
+        def forbiddenPrefixes = [
+                'org/firstinspires/',
+                'com/qualcomm/',
+                'android/',
+                'androidx/',
+                'com/google/',
+                'kotlin/',
+                'okhttp',
+                'okio/'
+        ]
+        def leaked = []
+        new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
+            zip.entries().each { entry ->
+                def name = entry.name
+                if (name.endsWith('.class') && forbiddenPrefixes.any { name.startsWith(it) }) {
+                    leaked << name
+                }
+            }
+        }
+
+        if (!leaked.isEmpty()) {
+            throw new GradleException(
+                    "FAT JAR DETECTED: SDK classes found in ${jarFile.name}. " +
+                    "Keep FTC deps as compileOnly only.\n" +
+                    leaked.take(20).join('\n')
+            )
+        }
+
+        logger.lifecycle("Thin JAR OK: ${jarFile.name} (${jarFile.length()} bytes) — only com.nonodo classes")
+    }
 }
 
 afterEvaluate {
@@ -41,17 +112,30 @@ afterEvaluate {
                 groupId = project.group
                 artifactId = rootProject.name
                 version = project.version
+
+                // POM must not declare FTC as a transitive dependency.
+                pom.withXml {
+                    def depsNode = asNode().dependencies
+                    if (depsNode != null) {
+                        depsNode.dependency.findAll { node ->
+                            def g = node.groupId.text()
+                            g == 'org.firstinspires.ftc' || g.startsWith('com.qualcomm')
+                        }.each { it.parent().remove(it) }
+                    }
+                }
             }
         }
     }
-}
 
-// OnBot Java / Blocks: upload build/outputs/jar/nodo-1.0.0.jar
-tasks.register('exportReleaseJar', Copy) {
-    dependsOn 'assembleRelease'
-    from(zipTree(layout.buildDirectory.file("outputs/aar/${rootProject.name}-release.aar").get().asFile)) {
-        include 'classes.jar'
+    tasks.named('assembleRelease').configure {
+        finalizedBy 'exportReleaseJar'
     }
-    into layout.buildDirectory.dir('outputs/jar')
-    rename('classes.jar', "${rootProject.name}-${version}.jar")
+
+    tasks.named('exportReleaseJar').configure {
+        finalizedBy 'verifyThinJar'
+    }
+
+    tasks.named('check').configure {
+        dependsOn 'verifyThinJar'
+    }
 }

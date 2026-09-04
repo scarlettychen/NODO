@@ -6,7 +6,7 @@ has_children: false
 ---
 
 # Welcome to NODO!
-### NODO is a lightweight FTC drivetrain libary designed for robots that don't use dead-wheel odometry.
+### NODO is a lightweight FTC drivetrain library designed for robots that don't use dead-wheel odometry.
 
 NODO uses hardware already on your robot (drivetrain motors, battery voltage, and Control Hub IMU) to make simple, repeatable autonomous routines without additional hardware
 
@@ -45,7 +45,7 @@ Keeping simplicity of timed autonomous while using software controls to make dri
 * Drive forward/backward for a specified time
 * Strafe for a specified time on mecanum drivetrains
 * Turn by a relative angle using IMU
-* Appyle feedforward to overcome drivetrain friction
+* Apply feedforward to overcome drivetrain friction
 * Build sequences of autonomous movements
 * Self correct for small heading changes while driving straight/strafing
 * Support both Java and FTC Blocks

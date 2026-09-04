@@ -28,6 +28,9 @@ public class NODOTankDrive {
     private static String rightName = "rightDrive";
     private static String imuName = "imu";
 
+    private static DcMotor.Direction leftDir = DcMotor.Direction.FORWARD;
+    private static DcMotor.Direction rightDir = DcMotor.Direction.REVERSE;
+
     private final SmartDriveMotor left;
     private final SmartDriveMotor right;
     private final IMU imu;
@@ -40,6 +43,15 @@ public class NODOTankDrive {
     public static void setMotorNames(String left, String right) {
         leftName = left;
         rightName = right;
+    }
+
+    /**
+     * Call in {@code init()} before {@code new NODOTankDrive(...)} so directions match your wiring.
+     * Default is left FORWARD, right REVERSE.
+     */
+    public static void setMotorDirections(DcMotor.Direction leftDirection, DcMotor.Direction rightDirection) {
+        leftDir = leftDirection;
+        rightDir = rightDirection;
     }
 
     public static void setImuName(String controlHubImu) {
@@ -55,7 +67,8 @@ public class NODOTankDrive {
 
         left = new SmartDriveMotor(hwMap, leftName, kF);
         right = new SmartDriveMotor(hwMap, rightName, kF);
-        right.reverse();
+        left.setDirection(leftDir);
+        right.setDirection(rightDir);
 
         imu = hwMap.get(IMU.class, imuName);
         setControlHubOrientation(LogoFacingDirection.UP, UsbFacingDirection.FORWARD);
@@ -66,7 +79,8 @@ public class NODOTankDrive {
         headingFilter.resetTo(readRawYawDegrees());
     }
 
-    public void setMotorDirections(DcMotor.Direction leftDir, DcMotor.Direction rightDir) {
+    public void applyMotorDirections(DcMotor.Direction leftDirection, DcMotor.Direction rightDirection) {
+        setMotorDirections(leftDirection, rightDirection);
         left.setDirection(leftDir);
         right.setDirection(rightDir);
     }
@@ -160,12 +174,18 @@ public class NODOTankDrive {
      * {@code this::opModeIsActive}.
      */
     public void driveFor(double power, long timeMs, BooleanSupplier isActive) {
-        double targetHeading = getRawHeading();
-        ElapsedTime timer = new ElapsedTime();
-        while (isActive.getAsBoolean() && timer.milliseconds() < timeMs) {
-            applyDriveHold(power, targetHeading);
-        }
-        stop();
+        final double targetHeading = getRawHeading();
+        BlockingLoops.driveFor(power, timeMs, isActive, new BlockingLoops.DriveTick() {
+            @Override
+            public void tick(double drivePower) {
+                applyDriveHold(drivePower, targetHeading);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                stop();
+            }
+        });
     }
 
     /**
@@ -175,17 +195,17 @@ public class NODOTankDrive {
     public void turnBy(double relativeDegrees, BooleanSupplier isActive) {
         TankRelativeTurnController turn = new TankRelativeTurnController(this);
         turn.start(relativeDegrees);
-        while (isActive.getAsBoolean() && !turn.update()) {
-            // PD turn ticks until settled or OpMode stops.
+        try {
+            while (isActive.getAsBoolean() && !turn.update()) {
+                BlockingLoops.yield();
+            }
+        } finally {
+            turn.end();
         }
-        turn.end();
     }
 
     public void waitFor(long timeMs, BooleanSupplier isActive) {
-        ElapsedTime timer = new ElapsedTime();
-        while (isActive.getAsBoolean() && timer.milliseconds() < timeMs) {
-            // idle
-        }
+        BlockingLoops.waitFor(timeMs, isActive);
     }
 
     private double readRawYawDegrees() {

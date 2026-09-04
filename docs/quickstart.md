@@ -10,7 +10,7 @@ Before you write your own autonomous paths, copy our sample OpMode to verify you
 
 Because NODO relies on timed moves, your feedforward constant ($kF$) must be tuned to overcome the friction of the foam tiles on your specific robot.
 
-<div class="language-toggle" data-language-group="some-unique-id" markdown="1">
+<div class="language-toggle" data-language-group="quickstart-main" markdown="1">
 
 <div data-language="Java/OnBot Java" markdown="1">
 
@@ -18,6 +18,18 @@ Because NODO relies on timed moves, your feedforward constant ($kF$) must be tun
 Create a new Java class in your folder called `NODOTestAuto` and paste the following code exactly as is. 
 
 ```java
+package org.firstinspires.ftc.teamcode;
+
+import com.nonodo.hardware.NODOChassis;
+import com.nonodo.hardware.NODODrive;
+import com.nonodo.hardware.NODODriveType;
+import com.nonodo.hardware.NODOTankDrive;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 /**
  * Testing auton. Drives straight, then turns 90 degrees
  */
@@ -34,17 +46,21 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
     public void runOpMode() {
 
         // ==== pick a drive type =====
-        setMecanum("FL", "FR", "BL", "BR", 
-            DcMotor.Direction.FORWARD, // FL direction 
-            DcMotor.Direction.REVERSE, // FR direction 
-            DcMotor.Direction.FORWARD,  // BL direction
-            DcMotor.Direction.REVERSE); // BR direction
+        setMecanumNames("FL", "FR", "BL", "BR");
 
-        // setTank("leftDrive", "rightDrive", 
-        //     DcMotor.Direction.FORWARD, // leftDrive direction
-        //     DcMotor.Direction.REVERSE); // rightDrive direction
+        // setTankNames("leftDrive", "rightDrive");
 
         NODODrive drive = new NODODrive(hardwareMap, DRIVE_TYPE, kF);
+
+        configureMecanumDirections(drive,
+                DcMotor.Direction.FORWARD, // FL direction
+                DcMotor.Direction.REVERSE, // FR direction
+                DcMotor.Direction.FORWARD,  // BL direction
+                DcMotor.Direction.REVERSE); // BR direction
+
+        // configureTankDirections(drive,
+        //     DcMotor.Direction.FORWARD, // leftDrive direction
+        //     DcMotor.Direction.REVERSE); // rightDrive direction
 
         drive.setControlHubOrientation(
                 LogoFacingDirection.UP, UsbFacingDirection.FORWARD
@@ -69,20 +85,26 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
         telemetry.update();
     }
 
-   public void setMecanum(String fl, String fr, String bl, String br,
-                            DcMotor.Direction flDir, DcMotor.Direction frDir, DcMotor.Direction blDir, DcMotor.Direction brDir
-    ) {
+    public void setMecanumNames(String fl, String fr, String bl, String br) {
         NODOChassis.setMotorNames(fl, fr, bl, br);
-        NODOChassis.setMotorDirections(flDir, frDir, blDir, brDir);
     }
 
-    public void setTank(String l, String r, DcMotor.Direction lDir, DcMotor.Direction rDir
-    ) {
-        NODOTankDrive.setMotorNames(l, r);
-        NODOTankDrive.setMotorDirections(lDir, rDir);
+    public void configureMecanumDirections(NODODrive drive,
+                                           DcMotor.Direction flDir, DcMotor.Direction frDir,
+                                           DcMotor.Direction blDir, DcMotor.Direction brDir) {
+        drive.setMecanumMotorDirections(flDir, frDir, blDir, brDir);
     }
-    
+
+    public void setTankNames(String l, String r) {
+        NODOTankDrive.setMotorNames(l, r);
+    }
+
+    public void configureTankDirections(NODODrive drive, DcMotor.Direction lDir, DcMotor.Direction rDir) {
+        drive.setTankMotorDirections(lDir, rDir);
+    }
+
 }
+
 
 ```
 
@@ -109,31 +131,48 @@ If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! O
 
 <div data-language="Blocks" markdown="1">
 
-## 1. Download the NODO `.blk` file
-In the Release section of the NODO github page, download the **NODO TeleOp `.blk` file**. 
+## 1. Open FTC Blocks
 
-## 2. Open Blocks & Upload the `.blk`
+In the Robot Controller web interface, go to **Blocks** and create a new **Autonomous** OpMode.
 
-Use **Upload/Import** in Blocks, and select the `.blk` file you just downloaded.
+## 2. Build the Init sequence
 
-## 2. Configure
+In the **NODO Init** toolbox, drag these blocks into the **Init** section (before Start), in order:
 
-1.  Change motor names to match hardware configuration. 
+```text
+setMecanum("FL", "FR", "BL", "BR",
+           "FORWARD", "REVERSE", "FORWARD", "REVERSE")
 
-2. Reverse motors as needed
-3. Update control hub orientation
+initializeMecanumDrive
 
-    Directions are **robot relative**.
+setControlHubOrientation("UP", "FORWARD")
 
-    Specific examples of orientation can be found [here](https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html).
+setTurnPD(0.04, 0.0025)
+```
 
+## 3. Configure
 
-## 3. Test!
+1. Change the motor names in `setMecanum` to match your hardware configuration.
+2. Flip any `FORWARD`/`REVERSE` values to correct motor directions.
+3. Update the logo and USB directions in `setControlHubOrientation`.
+
+Specific orientation examples can be found [here](https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html).
+
+## 4. Build the Run sequence
+
+In the **NODO Run** toolbox, drag these blocks **after Start**, stacked directly below the Start hat — **not inside `repeat while opModeIsActive`**:
+
+```text
+driveFor(0.5, 800)
+
+turnBy(-90)
+```
+
+## 5. Test!
 
 Your robot should drive forwards, then turn 90 degrees CW.
 
 If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! Our next step, tuning, will help fix this.
-
 
 </div>
 

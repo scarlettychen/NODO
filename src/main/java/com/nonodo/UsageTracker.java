@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * One anonymous ping the first time this library runs on a robot. Later autons and
  * teleops do not ping again. Set {@link #enabled} to {@code false} before constructing
- * {@code NODOChassis} (or calling Blocks {@code initializeDrive}) to opt out.
+ * {@code NODOChassis} (or calling Blocks {@code initializeMecanumDrive} / {@code initializeTankDrive}) to opt out.
  */
 public final class UsageTracker {
 
@@ -23,7 +23,7 @@ public final class UsageTracker {
     private static final String ENDPOINT =
             "https://us-central1-nodo-usage-tracker.cloudfunctions.net/trackUsage";
     private static final String LIBRARY = "NODO";
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "1.0.0-beta.1";
     private static final String PREFS_NAME = "com.nonodo.usage";
     private static final String PREF_PINGED = "install_ping_sent";
     private static final AtomicBoolean SENT_THIS_SESSION = new AtomicBoolean(false);

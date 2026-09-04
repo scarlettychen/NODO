@@ -22,7 +22,7 @@ public class SampleNoOdoTankAuto extends OpMode {
         NODOTankDrive.setMotorNames("leftDrive", "rightDrive");
         drive = new NODOTankDrive(hardwareMap, 0.03);
         drive.setControlHubOrientation(LogoFacingDirection.UP, UsbFacingDirection.FORWARD);
-        drive.setMotorDirections(DcMotor.Direction.FORWARD, DcMotor.Direction.REVERSE);
+        drive.applyMotorDirections(DcMotor.Direction.FORWARD, DcMotor.Direction.REVERSE);
 
         routine = new NODOTankRoutine(drive)
                 .drive(0.5, 800)

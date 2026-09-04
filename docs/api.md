@@ -25,7 +25,7 @@ Drive forward or backward for a set amount of time.
 
 ```java
 drive.driveFor(power, timeMs, this::opModeIsActive);
-````
+```
 
 | Argument | Type              | Description                                            |
 | -------- | ----------------- | ------------------------------------------------------ |
@@ -637,42 +637,65 @@ Usually called from `stop()`.
 
 # FTC Blocks Quick Reference
 
-The Blocks API exposes the most common autonomous functions.
+Blocks are split into two toolbox groups:
 
-| Blocks block                 | Purpose                             |
-| ---------------------------- | ----------------------------------- |
-| `initializeMecanumDrive`     | Initialize mecanum drive            |
-| `initializeTankDrive`        | Initialize tank drive               |
-| `initializeDrive`            | Initialize selected drive type      |
-| `setControlHubOrientation`   | Configure Control Hub orientation   |
-| `setExpansionHubOrientation` | Configure Expansion Hub orientation |
-| `setTurnPD`                  | Configure turn PD                   |
-| `driveStraight`              | Timed forward/backward movement     |
-| `strafe`                     | Timed mecanum strafe                |
-| `turnToHeading`              | Relative IMU turn                   |
-| `waitSeconds`                | Pause                               |
+- **NODO Init** — setup before Start (motor names, init, IMU orientation, turn tuning)
+- **NODO Run** — movement after Start (drive, strafe, turn, wait)
 
-### Example
+Motor directions are plain text: type `FORWARD` or `REVERSE` (no separate direction enum block).
+
+### NODO Init
+
+| Blocks block                 | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| `setFeedforward`             | Set kF before/after init (default 0.03)      |
+| `setMecanum`                 | Mecanum motor names + 4 directions           |
+| `setTank`                    | Tank motor names + directions                |
+| `initializeMecanumDrive`     | Initialize mecanum drive                     |
+| `initializeTankDrive`        | Initialize tank drive                        |
+| `setControlHubOrientation`   | Configure Control Hub orientation            |
+| `setExpansionHubOrientation` | Optional Expansion Hub IMU (mecanum)         |
+| `setTurnPD`                  | Turn kP + kD (2 inputs) or kP/kD/max (3)     |
+
+### NODO Run
+
+| Blocks block     | Purpose                                           |
+| ---------------- | ------------------------------------------------- |
+| `driveFor`       | Timed drive: **power**, **milliseconds**          |
+| `strafeFor`      | Timed strafe: **power**, **milliseconds** (mecanum) |
+| `turnBy`         | Relative turn (**degrees**, not time)             |
+| `waitFor`        | Pause (**milliseconds**)                          |
+| `getHeading`     | Read gyro heading (degrees)                       |
+| `stopDriveMotors`| Stop all drive motors immediately                 |
+
+### Example (matches SampleDriveAndTurn90)
 
 ```text
+[Init — before Start]
+
+setFeedforward(0.03)
+
+setMecanum("FL", "FR", "BL", "BR",
+           "FORWARD", "REVERSE", "FORWARD", "REVERSE")
+
 initializeMecanumDrive
 
 setControlHubOrientation("UP", "FORWARD")
 
-setTurnPD(0.04, 0.0025, 0.4)
+setTurnPD(0.04, 0.0025)
 
-        ↓ PLAY
+        ↓ START
 
-driveStraight(0.8, 0.5)
+[Run — stack once, not inside repeat-while]
 
-waitSeconds(0.15)
+driveFor(0.5, 800)
 
-turnToHeading(90, 0.8)
+turnBy(90)
 
-driveStraight(0.5, 0.4)
+getHeading
 ```
 
-> Blocks does not require `NODORoutine`. Stack movement blocks in the order you want them to execute.
+> Blocks does not require `NODORoutine`. Put Init blocks in the Init section; stack Run blocks once after Start (not inside `repeat while opModeIsActive`).
 
 ---
 

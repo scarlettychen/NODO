@@ -83,13 +83,13 @@ public class NODODrive {
             DcMotor.Direction backRight
     ) {
         if (mecanum != null) {
-            mecanum.setMotorDirections(frontLeft, frontRight, backLeft, backRight);
+            mecanum.applyMotorDirections(frontLeft, frontRight, backLeft, backRight);
         }
     }
 
     public void setTankMotorDirections(DcMotor.Direction left, DcMotor.Direction right) {
         if (tank != null) {
-            tank.setMotorDirections(left, right);
+            tank.applyMotorDirections(left, right);
         }
     }
 
