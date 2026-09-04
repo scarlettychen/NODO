@@ -133,24 +133,9 @@ If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! O
 
 ## 1. Open FTC Blocks
 
-In the Robot Controller web interface, go to **Blocks** and create a new **Autonomous** OpMode.
+In the Robot Controller web interface, go to **Blocks** and upload `TestOpmode.blk` that we downdloaded earlier in Installation.
 
-## 2. Build the Init sequence
-
-In the **NODO Init** toolbox, drag these blocks into the **Init** section (before Start), in order:
-
-```text
-setMecanum("FL", "FR", "BL", "BR",
-           "FORWARD", "REVERSE", "FORWARD", "REVERSE")
-
-initializeMecanumDrive
-
-setControlHubOrientation("UP", "FORWARD")
-
-setTurnPD(0.04, 0.0025)
-```
-
-## 3. Configure
+## 2. Configure
 
 1. Change the motor names in `setMecanum` to match your hardware configuration.
 2. Flip any `FORWARD`/`REVERSE` values to correct motor directions.
@@ -158,7 +143,7 @@ setTurnPD(0.04, 0.0025)
 
 Specific orientation examples can be found [here](https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html).
 
-## 4. Build the Run sequence
+## 3. Build the Run sequence
 
 In the **NODO Run** toolbox, drag these blocks **after Start**, stacked directly below the Start hat — **not inside `repeat while opModeIsActive`**:
 
@@ -168,7 +153,7 @@ driveFor(0.5, 800)
 turnBy(-90)
 ```
 
-## 5. Test!
+## 4. Test!
 
 Your robot should drive forwards, then turn 90 degrees CW.
 
@@ -179,4 +164,4 @@ If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! O
 </div>
 
 
-## Visit [Tuning]({% link tuning.md %}) on how to tune.
+<a href="{{ '/tuning/' | relative_url }}" class="btn btn-primary">Go to Tuning</a>

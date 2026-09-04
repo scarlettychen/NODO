@@ -7,7 +7,7 @@ nav_exclude: true
 
 # Language toggle authoring
 
-Each `.language-toggle` group gets a switcher **automatically** at the top of that section. Button labels are taken from each panel's `data-language` attribute (not hardcoded). Preference is stored in `localStorage` (`nodo-docs-lang`, values `java` or `blocks`) and applies on every docs page.
+Each `.language-toggle` group gets a switcher **automatically** at the top of that section. Buttons are always labeled **Java** / **Blocks** (from each panel's `data-language`). Choosing either one updates **every** toggle on the page, and the preference is stored in `localStorage` (`nodo-docs-lang`) so other docs pages stay in sync.
 
 ## Author pattern
 

@@ -13,6 +13,10 @@
     return 'java';
   }
 
+  function normalize(category) {
+    return VALID_CATEGORIES[category] ? category : DEFAULT_CATEGORY;
+  }
+
   function readCategory() {
     try {
       var stored = window.localStorage.getItem(STORAGE_KEY);
@@ -47,15 +51,6 @@
     return panels;
   }
 
-  function findPanelForCategory(panels, category) {
-    for (var i = 0; i < panels.length; i++) {
-      if (categorize(panels[i].getAttribute('data-language')) === category) {
-        return panels[i];
-      }
-    }
-    return panels[0] || null;
-  }
-
   function setPanelVisible(panel, visible) {
     if (!panel) {
       return;
@@ -72,44 +67,51 @@
     }
   }
 
+  /**
+   * Apply one language choice to every toggle group on the page
+   * (and keep button active states in sync).
+   */
+  function applyCategory(category) {
+    category = normalize(category);
+    document.documentElement.setAttribute('data-nodo-lang', category);
+
+    var groups = document.querySelectorAll('.language-toggle[data-nodo-init]');
+    for (var i = 0; i < groups.length; i++) {
+      applyCategoryToGroup(groups[i], category);
+    }
+
+    // Sync every toggle button on the page, including other sections.
+    var buttons = document.querySelectorAll('.nodo-lang-toggle__btn[data-lang-category]');
+    for (var j = 0; j < buttons.length; j++) {
+      var btn = buttons[j];
+      var active = btn.getAttribute('data-lang-category') === category;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+    }
+  }
+
   function applyCategoryToGroup(group, category) {
     var panels = group._nodoPanels;
-    var nav = group._nodoNav;
-
     if (!panels || !panels.length) {
       return;
     }
 
-    if (!VALID_CATEGORIES[category]) {
-      category = DEFAULT_CATEGORY;
-    }
-
-    var activePanel = findPanelForCategory(panels, category);
-    var activeLabel = activePanel ? activePanel.getAttribute('data-language') : '';
-
-    group.setAttribute('data-active-lang', activeLabel);
-
+    var activePanel = null;
     for (var i = 0; i < panels.length; i++) {
-      setPanelVisible(panels[i], panels[i] === activePanel);
+      var panelCategory = panels[i].getAttribute('data-lang-category');
+      if (panelCategory === category) {
+        activePanel = panels[i];
+        break;
+      }
+    }
+    if (!activePanel) {
+      activePanel = panels[0];
     }
 
-    if (!nav) {
-      return;
-    }
+    group.setAttribute('data-active-lang', activePanel.getAttribute('data-language') || '');
 
-    var buttons = nav.querySelectorAll('.nodo-lang-toggle__btn[data-lang-category]');
-    for (var j = 0; j < buttons.length; j++) {
-      var btn = buttons[j];
-      var btnActive = btn.getAttribute('data-lang-category') === category;
-      btn.classList.toggle('is-active', btnActive);
-      btn.setAttribute('aria-pressed', btnActive ? 'true' : 'false');
-    }
-  }
-
-  function applyCategory(category) {
-    var groups = document.querySelectorAll('.language-toggle[data-nodo-init]');
-    for (var i = 0; i < groups.length; i++) {
-      applyCategoryToGroup(groups[i], category);
+    for (var j = 0; j < panels.length; j++) {
+      setPanelVisible(panels[j], panels[j] === activePanel);
     }
   }
 
@@ -119,10 +121,18 @@
     nav.setAttribute('role', 'group');
     nav.setAttribute('aria-label', 'Documentation language');
 
+    // One button per language category (java / blocks), shared across all groups.
+    var seen = {};
     for (var i = 0; i < panels.length; i++) {
       var panel = panels[i];
       var label = panel.getAttribute('data-language') || ('Option ' + (i + 1));
       var category = categorize(label);
+      panel.setAttribute('data-lang-category', category);
+
+      if (seen[category]) {
+        continue;
+      }
+      seen[category] = true;
 
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -130,16 +140,20 @@
       btn.setAttribute('data-lang-category', category);
       btn.setAttribute('data-language-label', label);
       btn.setAttribute('aria-pressed', 'false');
-      btn.textContent = label;
+      // Stable short labels so every section matches.
+      btn.textContent = category === 'blocks' ? 'Blocks' : 'Java';
       nav.appendChild(btn);
     }
 
     group.insertBefore(nav, panels[0]);
     group._nodoNav = nav;
-    nav._nodoGroup = group;
   }
 
   function initGroup(group) {
+    if (group.getAttribute('data-nodo-init') === 'true') {
+      return true;
+    }
+
     var panels = getDirectPanels(group);
     if (panels.length < 2) {
       return false;
@@ -151,6 +165,12 @@
     return true;
   }
 
+  function setCategory(category) {
+    category = normalize(category);
+    writeCategory(category);
+    applyCategory(category);
+  }
+
   function onClick(event) {
     var btn = event.target.closest('.nodo-lang-toggle__btn[data-lang-category]');
     if (!btn) {
@@ -159,14 +179,7 @@
 
     event.preventDefault();
     event.stopPropagation();
-
-    var category = btn.getAttribute('data-lang-category');
-    if (!VALID_CATEGORIES[category]) {
-      return;
-    }
-
-    writeCategory(category);
-    applyCategory(category);
+    setCategory(btn.getAttribute('data-lang-category'));
   }
 
   function init() {
@@ -187,6 +200,7 @@
     document.documentElement.classList.add('nodo-lang-ready');
     document.addEventListener('click', onClick, true);
 
+    // Keep multiple tabs / pages in sync via localStorage.
     window.addEventListener('storage', function (event) {
       if (event.key === STORAGE_KEY) {
         applyCategory(readCategory());

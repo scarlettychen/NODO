@@ -101,6 +101,10 @@ Usual cause: this robot already has NODO baked in from **Android Studio** (`impl
 
 Also delete any older `nodo*.jar` under **ExternalLibraries** in OnBot Java before re-uploading.
 
+## 3. Download `TestOpmode.blk`
+
+Under GitHub releases, also download `TestOpmode.blk`.
+
 </div>
 
 </div>

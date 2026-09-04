@@ -40,12 +40,10 @@ private static double kF = 0.03;
 
 <div data-language="Blocks" markdown="1">
 
-You can use the dedicated setter to set kF.
+In blocks, your `kF  value is the block `setFeedforward`.
+![kF block](images/setFF.jpeg)
 
-1. Look in the **NODO Init** Blocks menu.
-2. Drag out the **`setFeedforward(kF)`** block.
-3. Snap a math number block to it and set it to `0.03`.
-4. Place this directly below your `initializeMecanumDrive` block.
+This block is also available under the NODO Init b
 
 </div>
 
@@ -115,14 +113,14 @@ Use the dedicated Turn PD block to override the default values.
 
 If your tuning doesn't seem to be working, check these common issues:
 
-* **Robot spins the completely wrong way:** Your Hub Orientation or Motor Directions are configured incorrectly.
-* **Robot never finishes the turn:** Your Turn Tolerance may be too strict. The robot may be trying to get within 1 degree but cannot consistently do so. Raise the tolerance (for example, to `3.5` degrees).
+* **Robot spins the completely wrong way:** Your Hub Orientation or Motor Directions may not be configured incorrectly.
+* **Robot never finishes the turn, and wobbles at the target:** Your Turn Tolerance may be too strict. The robot may be trying to get within 1 degree but cannot consistently do so. Raise the tolerance (for example, to `3.5` degrees).
 
 ---
 
 ## Next Steps
 
-Once your robot is tuned, you are ready to write complex autonomous paths.
+Once your robot is tuned, you are ready to write complex autonomous paths!
 
 * [**Building Autons →**]({% link building.md %})
 
