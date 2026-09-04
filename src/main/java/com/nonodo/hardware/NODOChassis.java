@@ -1,6 +1,5 @@
 package com.nonodo.hardware;
 
-import com.nonodo.UsageTracker;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection;
@@ -82,12 +81,6 @@ public class NODOChassis {
     }
 
     public NODOChassis(HardwareMap hwMap, double kF) {
-        try {
-            UsageTracker.ping(hwMap);
-        } catch (Exception ignored) {
-            // Usage ping must never prevent the drivetrain from initializing.
-        }
-
         // kF is the static feedforward needed to overcome foam tile friction.
         frontLeft = new SmartDriveMotor(hwMap, frontLeftName, kF);
         frontRight = new SmartDriveMotor(hwMap, frontRightName, kF);

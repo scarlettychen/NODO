@@ -1,6 +1,5 @@
 package com.nonodo.hardware;
 
-import com.nonodo.UsageTracker;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.LogoFacingDirection;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot.UsbFacingDirection;
@@ -59,12 +58,6 @@ public class NODOTankDrive {
     }
 
     public NODOTankDrive(HardwareMap hwMap, double kF) {
-        try {
-            UsageTracker.ping(hwMap);
-        } catch (Exception ignored) {
-            // Usage ping must never prevent the drivetrain from initializing.
-        }
-
         left = new SmartDriveMotor(hwMap, leftName, kF);
         right = new SmartDriveMotor(hwMap, rightName, kF);
         left.setDirection(leftDir);

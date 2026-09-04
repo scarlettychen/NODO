@@ -12,7 +12,6 @@ Jekyll + [Just the Docs](https://just-the-docs.github.io/just-the-docs/) site fo
 | `tuning.md` | Tuning Guide | 4 |
 | `building.md` | Building Your First Autonomous | 5 |
 | `api.md` | API Reference | 6 |
-| `privacy.md` | Telemetry & Privacy | 7 (hidden from nav) |
 | `language-toggle.md` | Authoring notes | hidden |
 
 ## Publish to GitHub Pages

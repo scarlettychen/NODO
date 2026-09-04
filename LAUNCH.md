@@ -40,7 +40,6 @@ Published from `/docs` on `main`. After doc changes, push and hard-refresh the s
 ## Version bump (next release)
 
 1. Update `version` in `build.gradle`
-2. Update `UsageTracker.VERSION`
-3. Update `docs/installation.md` and `README.md` coordinates
-4. `./gradlew exportReleaseJar`
-5. `git tag -a vX.Y.Z -m "..."` → push tag → GitHub Release → attach JAR
+2. Update `docs/installation.md` and `README.md` coordinates
+3. `./gradlew exportReleaseJar`
+4. `git tag -a vX.Y.Z -m "..."` → push tag → GitHub Release → attach JAR

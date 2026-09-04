@@ -1,6 +1,5 @@
 package com.nonodo.blocks;
 
-import com.nonodo.UsageTracker;
 import com.nonodo.hardware.BlockingLoops;
 import com.nonodo.hardware.NODOChassis;
 import com.nonodo.hardware.NODOTankDrive;
@@ -338,11 +337,6 @@ final class NodoBlocksRuntime {
         leftDrive = rightDrive = null;
         imu = null;
         driveInitialized = false;
-        try {
-            UsageTracker.ping(BlocksOpModeCompanion.hardwareMap);
-        } catch (Exception ignored) {
-            // Usage ping must never prevent drive init.
-        }
 
         if (BlocksOpModeCompanion.hardwareMap == null) {
             addLine("initializeDrive: hardwareMap is null. Call this from a Blocks OpMode.");

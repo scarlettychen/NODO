@@ -11,7 +11,7 @@ has_children: false
 NODO uses hardware already on your robot (drivetrain motors, battery voltage, and Control Hub IMU) to make simple, repeatable autonomous routines without additional hardware
 
 ## Dive straight into installation?
-
+<br>
 <p><a href="{{ '/installation/' | relative_url }}" class="btn btn-primary">Install!</a></p>
 
 
@@ -70,13 +70,13 @@ It does not:
 3. [Configure your chassis]({{ '/quickstart/' | relative_url }})
 
     Set up motors, directions, and IMU orientation.
-4. [Build your Autonomous]({{ '/building/' | relative_url }})
-
-   Learn movement commands and build complete sequences.
-5. [Tune]({{ '/tuning/' | relative_url }})
+4. [Tune]({{ '/tuning/' | relative_url }})
 
    Tune feedforward and turn controls for your robot
 
+5. [Build your Autonomous]({{ '/building/' | relative_url }})
+
+   Learn movement commands and build complete sequences.
 
 ### Do you already know NODO?
 [Browse API Reference →]({{ '/api/' | relative_url }})
@@ -88,6 +88,6 @@ It does not:
 
 
 ---
-#### Simpler, not more complicated.
-*By Scarlett C. from Team [.....]
+#### NODO
+*By Scarlett C. from Team 8393, the Giant Diencephalic BrainSTEM Robotics Team
 
