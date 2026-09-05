@@ -41,7 +41,7 @@ Keeping simplicity of timed autonomous while using software controls to make dri
 *   **Simple Routine Builder:** Chains commands together easily, all with little learning curve.
 *   **FTC Blocks & OnBot Java Support:** Support for OnBot Java and Blocks programmers!
 
-## NODO does
+## NODO does:
 * Drive forward/backward for a specified time
 * Strafe for a specified time on mecanum drivetrains
 * Turn by a relative angle using IMU
@@ -50,7 +50,7 @@ Keeping simplicity of timed autonomous while using software controls to make dri
 * Self correct for small heading changes while driving straight/strafing
 * Support both Java and FTC Blocks
 
-## NODO is not
+## NODO is not:
 NODO is **not** a replacement for full field localization.
 
 It does not:
