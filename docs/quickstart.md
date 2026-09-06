@@ -44,23 +44,18 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        // ==== pick one =====
+        setMecanum("FL", "FR", "BL", "BR",
+                DcMotor.Direction.FORWARD,
+                DcMotor.Direction.REVERSE,
+                DcMotor.Direction.FORWARD,
+                DcMotor.Direction.REVERSE);
 
-        // ==== pick a drive type =====
-        setMecanumNames("FL", "FR", "BL", "BR");
-
-        // setTankNames("leftDrive", "rightDrive");
+        // setTank("leftDrive", "rightDrive",
+        //     DcMotor.Direction.FORWARD,
+        //     DcMotor.Direction.REVERSE);
 
         NODODrive drive = new NODODrive(hardwareMap, DRIVE_TYPE, kF);
-
-        configureMecanumDirections(drive,
-                DcMotor.Direction.FORWARD, // FL direction
-                DcMotor.Direction.REVERSE, // FR direction
-                DcMotor.Direction.FORWARD,  // BL direction
-                DcMotor.Direction.REVERSE); // BR direction
-
-        // configureTankDirections(drive,
-        //     DcMotor.Direction.FORWARD, // leftDrive direction
-        //     DcMotor.Direction.REVERSE); // rightDrive direction
 
         drive.setControlHubOrientation(
                 LogoFacingDirection.UP, UsbFacingDirection.FORWARD
@@ -76,7 +71,7 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
             return;
         }
 
-        // start of tele
+        // LinearOpMode: call helpers in order — no start()/loop() needed.
         drive.driveFor(0.5, 800, this::opModeIsActive);
         drive.turnBy(-90, this::opModeIsActive); // +90 = CCW; use -90 for CW
 
@@ -85,27 +80,18 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
         telemetry.update();
     }
 
-    public void setMecanumNames(String fl, String fr, String bl, String br) {
+    public void setMecanum(String fl, String fr, String bl, String br,
+                           DcMotor.Direction flDir, DcMotor.Direction frDir,
+                           DcMotor.Direction blDir, DcMotor.Direction brDir) {
         NODOChassis.setMotorNames(fl, fr, bl, br);
+        NODOChassis.setMotorDirections(flDir, frDir, blDir, brDir);
     }
 
-    public void configureMecanumDirections(NODODrive drive,
-                                           DcMotor.Direction flDir, DcMotor.Direction frDir,
-                                           DcMotor.Direction blDir, DcMotor.Direction brDir) {
-        drive.setMecanumMotorDirections(flDir, frDir, blDir, brDir);
-    }
-
-    public void setTankNames(String l, String r) {
+    public void setTank(String l, String r, DcMotor.Direction lDir, DcMotor.Direction rDir) {
         NODOTankDrive.setMotorNames(l, r);
+        NODOTankDrive.setMotorDirections(lDir, rDir);
     }
-
-    public void configureTankDirections(NODODrive drive, DcMotor.Direction lDir, DcMotor.Direction rDir) {
-        drive.setTankMotorDirections(lDir, rDir);
-    }
-
 }
-
-
 ```
 
 ## 2. Configure
@@ -133,7 +119,7 @@ If it doesn't turn exactly 90 degrees, or it shakes when turning, don't worry! O
 
 ## 1. Open FTC Blocks
 
-In the Robot Controller web interface, go to **Blocks** and upload `TestOpmode.blk` that we downdloaded earlier in Installation.
+In the Robot Controller web interface, go to **Blocks** and import **`TestOpmode.blk`** (downloaded from Releases in Installation).
 
 ## 2. Configure
 

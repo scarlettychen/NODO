@@ -37,7 +37,7 @@ allprojects {
 Open **TeamCode** `build.gradle` and add:
 
 ```gradle
-implementation 'com.github.scarlettychen:NODO:v1.0.0-beta.1'
+implementation 'com.github.scarlettychen:NODO:v1.0.0'
 ```
 
 Example `dependencies` block:
@@ -47,7 +47,7 @@ dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.ftclib.ftclib:core:2.1.1'
 
-    implementation 'com.github.scarlettychen:NODO:v1.0.0-beta.1'
+    implementation 'com.github.scarlettychen:NODO:v1.0.0'
 }
 ```
 
@@ -63,7 +63,7 @@ Click **Sync Now** when Android Studio prompts you. NODO classes under `com.nono
 
 ## 1. Download the JAR
 
-Go to the [NODO GitHub Releases](https://github.com/scarlettychen/NODO/releases/latest) page and download **`nodo-1.0.0-beta.1.jar`** (attached to the release).
+Go to the [NODO GitHub Releases](https://github.com/scarlettychen/NODO/releases/latest) page and download **`nodo-1.0.0.jar`** (attached to the release).
 
 ## 2. Open OnBot Java
 
@@ -77,7 +77,7 @@ On the Robot Controller, open **OnBot Java**.
 
    ![uploading]({{ '/images/clickupload.png' | relative_url }})
 
-2. Select **`nodo-1.0.0-beta.1.jar`**
+2. Select **`nodo-1.0.0.jar`**
 
    ![select]({{ '/images/uploadjar.png' | relative_url }})
 
@@ -101,9 +101,9 @@ Usual cause: this robot already has NODO baked in from **Android Studio** (`impl
 
 Also delete any older `nodo*.jar` under **ExternalLibraries** in OnBot Java before re-uploading.
 
-## 3. Download `TestOpmode.blk`
+## 4. Download `TestOpmode.blk`
 
-Under GitHub releases, also download `TestOpmode.blk`.
+On the same [Releases](https://github.com/scarlettychen/NODO/releases/latest) page, also download **`TestOpmode.blk`**. You will import it in Quickstart.
 
 </div>
 

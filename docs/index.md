@@ -89,5 +89,5 @@ It does not:
 
 ---
 #### NODO
-*By Scarlett C. from Team 8393, the Giant Diencephalic BrainSTEM Robotics Team
+*By Scarlett C. from Team 8393, the Giant Diencephalic BrainSTEM Robotics Team*
 

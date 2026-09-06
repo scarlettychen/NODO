@@ -16,6 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @Autonomous(name = "Sample Drive + Turn 90")
 public class SampleDriveAndTurn90 extends LinearOpMode {
 
+    private static double kF = 0.03;
+
     // ===== pick one of these =====
     private static final NODODriveType DRIVE_TYPE = NODODriveType.MECANUM;
     // private static final NODODriveType DRIVE_TYPE = NODODriveType.TANK;
@@ -23,17 +25,17 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
     @Override
     public void runOpMode() {
         // ==== pick one =====
-        setMecanum("FL", "FR", "BL", "BR", 
-            DcMotor.Direction.FORWARD, 
-            DcMotor.Direction.REVERSE, 
-            DcMotor.Direction.FORWARD, 
-            DcMotor.Direction.REVERSE);
+        setMecanum("FL", "FR", "BL", "BR",
+                DcMotor.Direction.FORWARD,
+                DcMotor.Direction.REVERSE,
+                DcMotor.Direction.FORWARD,
+                DcMotor.Direction.REVERSE);
 
-        // setTank("leftDrive", "rightDrive", 
-        //     DcMotor.Direction.FORWARD, 
+        // setTank("leftDrive", "rightDrive",
+        //     DcMotor.Direction.FORWARD,
         //     DcMotor.Direction.REVERSE);
 
-        NODODrive drive = new NODODrive(hardwareMap, DRIVE_TYPE, 0.03);
+        NODODrive drive = new NODODrive(hardwareMap, DRIVE_TYPE, kF);
 
         drive.setControlHubOrientation(
                 LogoFacingDirection.UP, UsbFacingDirection.FORWARD
@@ -51,7 +53,7 @@ public class SampleDriveAndTurn90 extends LinearOpMode {
 
         // LinearOpMode: call helpers in order — no start()/loop() needed.
         drive.driveFor(0.5, 800, this::opModeIsActive);
-        drive.turnBy(90, this::opModeIsActive); // +90 = CCW; use -90 for CW
+        drive.turnBy(-90, this::opModeIsActive); // +90 = CCW; use -90 for CW
 
         telemetry.addData("heading", drive.getHeading());
         telemetry.addLine("done");

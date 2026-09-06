@@ -40,10 +40,9 @@ private static double kF = 0.03;
 
 <div data-language="Blocks" markdown="1">
 
-In blocks, your `kF  value is the block `setFeedforward`.
-![kF block](images/setFF.jpeg)
+In Blocks, set `kF` with the **`setFeedforward`** block under **NODO Init**.
 
-This block is also available under the NODO Init b
+![kF block]({{ '/images/setFF.jpeg' | relative_url }})
 
 </div>
 

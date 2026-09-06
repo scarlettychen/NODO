@@ -11,5 +11,6 @@ These files are **not** compiled into the NODO AAR — they are examples only.
 | `SampleNoOdoRoutineAuto.java` | Iterative OpMode with `NODORoutine` fluent API — no `NODOCommand` imports |
 | `SampleNoOdoTeleOp.java` | Mecanum teleop with yaw reset (chassis only) |
 | `SampleNoOdoTankAuto.java` | Tank `NODOTankRoutine` |
+| `TestOpmode.blk` | Blocks sample: init + drive + wait (import in FTC Blocks) |
 
 After adding the Gradle dependency, sync and deploy from **your** Robot Controller project as usual.

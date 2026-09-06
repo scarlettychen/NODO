@@ -339,7 +339,7 @@ final class NodoBlocksRuntime {
         driveInitialized = false;
 
         if (BlocksOpModeCompanion.hardwareMap == null) {
-            addLine("initializeDrive: hardwareMap is null. Call this from a Blocks OpMode.");
+            addLine("initializeMecanumDrive / initializeTankDrive: hardwareMap is null. Call this from a Blocks OpMode.");
             updateTelemetry();
             return;
         }
