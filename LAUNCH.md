@@ -1,18 +1,18 @@
 # Launch checklist
 
-Current release: **v1.0.0**
+Current release: **v1.0.1**
 
 ## Before announcing
 
 - [ ] Commit and push latest `main` to GitHub
-- [ ] Tag `v1.0.0` on that commit and push the tag
-- [ ] Publish the GitHub Release **NODO v1.0.0** with:
-  - `nodo-1.0.0.jar` (from `./gradlew exportReleaseJar`)
+- [ ] Tag `v1.0.1` on that commit and push the tag
+- [ ] Publish the GitHub Release **NODO v1.0.1** with:
+  - `nodo-1.0.1.jar` (from `./gradlew exportReleaseJar`)
   - `samples/TestOpmode.blk`
-- [ ] Trigger [JitPack](https://jitpack.io/#scarlettychen/NODO) for tag `v1.0.0` (Look up → Get it → wait for green)
+- [ ] Trigger [JitPack](https://jitpack.io/#scarlettychen/NODO) for tag `v1.0.1` (Look up → Get it → wait for green)
 - [ ] Confirm docs site: https://scarlettychen.github.io/NODO/
-- [ ] Test Java: `implementation 'com.github.scarlettychen:NODO:v1.0.0'` in a TeamCode project
-- [ ] Test OnBot: upload `nodo-1.0.0.jar`, Build Everything, confirm **NODO Init** / **NODO Run**
+- [ ] Test Java: `implementation 'com.github.scarlettychen:NODO:v1.0.1'` in a TeamCode project
+- [ ] Test OnBot: upload `nodo-1.0.1.jar`, Build Everything, confirm **NODO Init** / **NODO Run**
 - [ ] Import `TestOpmode.blk` and run drive + turn on a robot
 
 ## Build artifacts locally
@@ -24,7 +24,7 @@ Current release: **v1.0.0**
 | Output | Path |
 |--------|------|
 | AAR (Android Studio) | `build/outputs/aar/nodo-release.aar` |
-| JAR (OnBot / Blocks) | `build/outputs/jar/nodo-1.0.0.jar` |
+| JAR (OnBot / Blocks) | `build/outputs/jar/nodo-1.0.1.jar` |
 | Blocks sample | `samples/TestOpmode.blk` |
 
 ## Team install (copy-paste)
@@ -32,7 +32,7 @@ Current release: **v1.0.0**
 **Gradle** — root `build.gradle` needs JitPack; **TeamCode** `build.gradle`:
 
 ```gradle
-implementation 'com.github.scarlettychen:NODO:v1.0.0'
+implementation 'com.github.scarlettychen:NODO:v1.0.1'
 ```
 
 **OnBot / Blocks** — [Releases](https://github.com/scarlettychen/NODO/releases/latest) → download JAR → Upload → Build Everything.

@@ -8,7 +8,8 @@ public class ImuHeadingFilter {
 
     /**
      * Weight on the previous estimate. Higher = smoother / more lag.
-     * 0.8 matches {@link BatteryVoltageFilter} and is a good FTC loop default.
+     * Lower than {@link BatteryVoltageFilter}'s {@code alpha} (0.8) because heading
+     * needs to track faster than battery voltage for responsive correction.
      */
     public static final double ALPHA = 0.5;
 

@@ -274,15 +274,20 @@ public class NODOChassis {
     /**
      * One control tick of strafe with gyro heading hold.
      * Positive {@code power} = right, negative = left.
+     *
+     * <p>The rotation (omega) coupling to each wheel is purely geometric — left wheels
+     * (FL, BL) always need {@code -correction} and right wheels (FR, BR) always need
+     * {@code +correction} to produce the same corrective turn, whether driving or
+     * strafing. This must match the sign pattern in {@link #applyDriveHold}.
      */
     public void applyStrafeHold(double power, double targetHeadingDeg) {
         double headingError = AngleMath.normalize(targetHeadingDeg - getRawHeading());
         double correction = headingError * HEADING_GAIN;
         setMecanumPowers(
-                power + correction,
-                -power - correction,
+                power - correction,
                 -power + correction,
-                power - correction
+                -power - correction,
+                power + correction
         );
     }
 
