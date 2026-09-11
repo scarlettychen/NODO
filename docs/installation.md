@@ -37,7 +37,7 @@ allprojects {
 Open **TeamCode** `build.gradle` and add:
 
 ```gradle
-implementation 'com.github.scarlettychen:NODO:v1.0.1'
+implementation 'com.github.BrainStem-FIRST:NODO:v1.0.1'
 ```
 
 Example `dependencies` block:
@@ -47,7 +47,7 @@ dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.ftclib.ftclib:core:2.1.1'
 
-    implementation 'com.github.scarlettychen:NODO:v1.0.1'
+    implementation 'com.github.BrainStem-FIRST:NODO:v1.0.1'
 }
 ```
 
@@ -63,7 +63,7 @@ Click **Sync Now** when Android Studio prompts you. NODO classes under `com.nono
 
 ## 1. Download the JAR
 
-Go to the [NODO GitHub Releases](https://github.com/scarlettychen/NODO/releases/latest) page and download **`nodo-1.0.1.jar`** (attached to the release).
+Go to the [NODO GitHub Releases](https://github.com/BrainStem-FIRST/NODO/releases/latest) page and download **`nodo-1.0.1.jar`** (attached to the release).
 
 ## 2. Open OnBot Java
 
@@ -92,7 +92,7 @@ When the upload succeeds, NODO library will appear under external libraries in O
 
 OnBot rejects a library when **any** class in the JAR can already be loaded from the installed Robot Controller app. 
 
-Usual cause: this robot already has NODO baked in from **Android Studio** (`implementation 'com.github.scarlettychen:NODO:...'` in TeamCode). Pick **one** install path per robot:
+Usual cause: this robot already has NODO baked in from **Android Studio** (`implementation 'com.github.BrainStem-FIRST:NODO:...'` in TeamCode). Pick **one** install path per robot:
 
 | Path | What to do |
 |------|------------|
@@ -103,7 +103,7 @@ Also delete any older `nodo*.jar` under **ExternalLibraries** in OnBot Java befo
 
 ## 4. Download `TestOpmode.blk`
 
-On the same [Releases](https://github.com/scarlettychen/NODO/releases/latest) page, also download **`TestOpmode.blk`**. You will import it in Quickstart.
+On the same [Releases](https://github.com/BrainStem-FIRST/NODO/releases/latest) page, also download **`TestOpmode.blk`**. You will import it in Quickstart.
 
 </div>
 

@@ -9,9 +9,9 @@ Current release: **v1.0.1**
 - [ ] Publish the GitHub Release **NODO v1.0.1** with:
   - `nodo-1.0.1.jar` (from `./gradlew exportReleaseJar`)
   - `samples/TestOpmode.blk`
-- [ ] Trigger [JitPack](https://jitpack.io/#scarlettychen/NODO) for tag `v1.0.1` (Look up → Get it → wait for green)
+- [ ] Trigger [JitPack](https://jitpack.io/#BrainStem-FIRST/NODO) for tag `v1.0.1` (Look up → Get it → wait for green)
 - [ ] Confirm docs site: https://scarlettychen.github.io/NODO/
-- [ ] Test Java: `implementation 'com.github.scarlettychen:NODO:v1.0.1'` in a TeamCode project
+- [ ] Test Java: `implementation 'com.github.BrainStem-FIRST:NODO:v1.0.1'` in a TeamCode project
 - [ ] Test OnBot: upload `nodo-1.0.1.jar`, Build Everything, confirm **NODO Init** / **NODO Run**
 - [ ] Import `TestOpmode.blk` and run drive + turn on a robot
 
@@ -32,10 +32,10 @@ Current release: **v1.0.1**
 **Gradle** — root `build.gradle` needs JitPack; **TeamCode** `build.gradle`:
 
 ```gradle
-implementation 'com.github.scarlettychen:NODO:v1.0.1'
+implementation 'com.github.BrainStem-FIRST:NODO:v1.0.1'
 ```
 
-**OnBot / Blocks** — [Releases](https://github.com/scarlettychen/NODO/releases/latest) → download JAR → Upload → Build Everything.
+**OnBot / Blocks** — [Releases](https://github.com/BrainStem-FIRST/NODO/releases/latest) → download JAR → Upload → Build Everything.
 
 ## Docs
 

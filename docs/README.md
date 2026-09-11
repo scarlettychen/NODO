@@ -18,7 +18,7 @@ Jekyll + [Just the Docs](https://just-the-docs.github.io/just-the-docs/) site fo
 
 ### One-time setup (GitHub website)
 
-1. Push the `docs/` folder to **`main`** on [github.com/scarlettychen/NODO](https://github.com/scarlettychen/NODO).
+1. Push the `docs/` folder to **`main`** on [github.com/BrainStem-FIRST/NODO](https://github.com/BrainStem-FIRST/NODO).
 2. Open the repo → **Settings** → **Pages**.
 3. Under **Build and deployment** → **Source**, choose **Deploy from a branch**.
 4. **Branch:** `main` · **Folder:** `/docs` · **Save**.
